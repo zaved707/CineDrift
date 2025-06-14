@@ -15,26 +15,29 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation3.runtime.NavBackStack
 import coil3.compose.AsyncImagePainter
 import coil3.compose.rememberAsyncImagePainter
+import com.example.nav3recipes.MovieDetailPageRoute
 import com.example.nav3recipes.popularMoviesModel.MoviesResponse
 
 //horizontal movie corousal with a title
 
 @Composable
-fun MovieCarousel(movies: MoviesResponse){
+fun MovieCarousel(backStack: SnapshotStateList<Any>,movies: MoviesResponse){
     LazyRow {
         items(movies.results) { item ->
-            val imageLink = "https://image.tmdb.org/t/p/original${item.poster_path}"
+            val imageLink = "https://image.tmdb.org/t/p/w185${item.poster_path}"
             val painter =
                 rememberAsyncImagePainter(imageLink)
             val state = painter.state.collectAsStateWithLifecycle()
             Column {
-                Card(onClick = {}) {
+                Card(onClick = {backStack.add(MovieDetailPageRoute(item.id.toString()))}) {
                     Box(
                         modifier = Modifier.size(width = 200.dp, height = 280.dp)
                             .padding(20.dp), contentAlignment = Alignment.Center
@@ -68,8 +71,9 @@ fun MovieCarousel(movies: MoviesResponse){
 
                 }
                 Spacer(modifier = Modifier.height(20.dp))
-                Column (modifier = Modifier.width(200.dp)){
+                Column (modifier = Modifier.width(200.dp).height(100.dp)){
                     Text(item.title)
+                    Text(item.id.toString())
                 }
             }
             Spacer(modifier = Modifier.width(20.dp))

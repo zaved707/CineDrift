@@ -5,11 +5,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.material3.Button
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -23,28 +23,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.nav3recipes.MovieDetailPageRoute
 import com.example.nav3recipes.ui.components.MovieCarousel
 
 @Composable
 fun MainPage(backStack: SnapshotStateList<Any>, viewModel: MainPageViewModel) {
-    var idValue by remember { mutableStateOf("640146") }
 
 
-    Column {
-        TextField(
-            placeholder = { Text("enter Id") },
-            value = idValue,
-            onValueChange = { idValue = it })
-        Button(onClick = {
-            backStack.add(
-                MovieDetailPageRoute(idValue)
-            )
-        }) { Text("search") }
+    val scrollState = rememberScrollState()
+    Column (modifier = Modifier.verticalScroll(scrollState)){
+
         val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
         val error by viewModel.error.collectAsStateWithLifecycle()
-        val movies = viewModel.movies.collectAsStateWithLifecycle().value
-
+        val popularMovies = viewModel.popularMovies.collectAsStateWithLifecycle().value
+        val topRatedMovies= viewModel.topRatedMoviess.collectAsStateWithLifecycle().value
         Text("Popular Movies", style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 40.sp))
         HorizontalDivider()
         Spacer(modifier = Modifier.height(20.dp))
@@ -55,15 +46,32 @@ fun MainPage(backStack: SnapshotStateList<Any>, viewModel: MainPageViewModel) {
         } else {
             if (isLoading) {
                 CircularProgressIndicator()
-            } else if (movies == null) {
+            } else if (popularMovies == null) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
+                    Text("Empty")
                 }
             } else {
-                MovieCarousel(movies)
+                MovieCarousel(backStack, popularMovies)
             }
         }
+        Text("Top-Rated Movies", style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 40.sp))
+        HorizontalDivider()
+        Spacer(modifier = Modifier.height(20.dp))
 
-
+        if (error != null) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(error.toString())
+            }
+        } else {
+            if (isLoading) {
+                CircularProgressIndicator()
+            } else if (topRatedMovies == null) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("Empty")
+                }
+            } else {
+                MovieCarousel(backStack, topRatedMovies)
+            }
+        }
     }
 }
