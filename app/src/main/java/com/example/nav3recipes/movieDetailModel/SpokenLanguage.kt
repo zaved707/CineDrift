@@ -1,4 +1,4 @@
-package com.example.nav3recipes.retrofitApi.models
+package com.example.nav3recipes.movieDetailModel
 
 data class SpokenLanguage(
     val english_name: String,

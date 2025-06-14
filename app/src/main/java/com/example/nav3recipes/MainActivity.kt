@@ -4,22 +4,16 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
@@ -27,6 +21,8 @@ import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import androidx.navigation3.ui.rememberSceneSetupNavEntryDecorator
+import com.example.nav3recipes.ui.mainPage.MainPage
+import com.example.nav3recipes.ui.mainPage.MainPageViewModel
 import com.example.nav3recipes.ui.movieDetailsPage.MovieDetailsPage
 import com.example.nav3recipes.ui.movieDetailsPage.MovieDetailsPageViewModel
 import com.example.nav3recipes.ui.setEdgeToEdgeConfig
@@ -35,7 +31,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object RouteA
+data object MainPageRoute
 
 @Serializable
 data class MovieDetailPageRoute(val id: String)
@@ -59,7 +55,7 @@ class RecipePickerActivity : ComponentActivity() {
                         )
                     }) { innerPadding ->
                     Box(modifier = Modifier.padding(innerPadding)) {
-                        val backStack = remember { mutableStateListOf<Any>(RouteA) }
+                        val backStack = remember { mutableStateListOf<Any>(MainPageRoute) }
 
                         NavDisplay(
                             backStack = backStack,
@@ -71,20 +67,9 @@ class RecipePickerActivity : ComponentActivity() {
                             ),
                             entryProvider = { key ->
                                 when(key) {
-                                    is RouteA -> {
+                                    is MainPageRoute -> {
                                         NavEntry(key= key){
-                                            var idValue by remember {mutableStateOf("640146")}
-                                            Column {
-                                                TextField(
-                                                    placeholder = {Text("enter Id")},
-                                                    value = idValue,
-                                                    onValueChange = { idValue = it })
-                                                Button(onClick = {
-                                                    backStack.add(
-                                                        MovieDetailPageRoute(idValue)
-                                                    )
-                                                }) { Text("hi") }
-                                            }
+                                            MainPage(backStack)
 
                                         }
                                     }

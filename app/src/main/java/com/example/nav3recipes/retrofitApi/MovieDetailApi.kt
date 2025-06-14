@@ -1,6 +1,6 @@
 package com.example.nav3recipes.retrofitApi
 
-import com.example.nav3recipes.retrofitApi.models.MovieDetailModel
+import com.example.nav3recipes.movieDetailModel.MovieDetailModel
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Header
@@ -15,4 +15,6 @@ interface MovieDetailApi {
         @Header("Authorization") authHeader: String,
         @Header("accept") acceptHeader: String = "application/json"
     ): Response<MovieDetailModel>
+
+
 }

@@ -2,7 +2,6 @@ package com.example.nav3recipes.ui.movieDetailsPage
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,7 +18,10 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -27,20 +29,24 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImagePainter
 import coil3.compose.rememberAsyncImagePainter
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontStyle
 
 @Composable
 fun MovieDetailsPage(viewModel: MovieDetailsPageViewModel) {
 
     val movie = viewModel.movie.collectAsStateWithLifecycle().value
+    val error by viewModel.error.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
+    if (error !=null){
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+            Text(error.toString())}
+    }else{
     if (isLoading){
-        CircularProgressIndicator()
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+        CircularProgressIndicator()}
     }
     else if ( movie == null) {
-        CircularProgressIndicator()
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+            CircularProgressIndicator()}
     } else {
         val imageLink = "https://image.tmdb.org/t/p/original${movie.poster_path}"
         val title = movie.title
@@ -63,7 +69,8 @@ fun MovieDetailsPage(viewModel: MovieDetailsPageViewModel) {
                     }
 
                     is AsyncImagePainter.State.Loading -> {
-                        CircularProgressIndicator()
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+                            CircularProgressIndicator()}
                     }
 
                     is AsyncImagePainter.State.Success -> {
@@ -117,6 +124,6 @@ fun MovieDetailsPage(viewModel: MovieDetailsPageViewModel) {
                     ) { Text("Share") }
                 }
             }
-        }
+        }}
     }
 }
