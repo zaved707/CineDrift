@@ -36,101 +36,94 @@ fun MovieDetailsPage(viewModel: MovieDetailsPageViewModel) {
     val movie = viewModel.movie.collectAsStateWithLifecycle().value
     val error by viewModel.error.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
-    if (error != null) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text(error.toString())
-        }
+    if (error !=null){
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+            Text(error.toString())}
+    }else{
+    if (isLoading){
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+        CircularProgressIndicator()}
+    }
+    else if ( movie == null) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+            CircularProgressIndicator()}
     } else {
-        if (isLoading) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
-            }
-        } else if (movie == null) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
-            }
-        } else {
-            val imageLink = "https://image.tmdb.org/t/p/original${movie.poster_path}"
-            val title = movie.title
-            val movieDescription = movie.overview
-            val painter =
-                rememberAsyncImagePainter(imageLink)
-            val state = painter.state.collectAsStateWithLifecycle()
-            val scrollState = rememberScrollState()
-            Column(modifier = Modifier.verticalScroll(scrollState)) {
+        val imageLink = "https://image.tmdb.org/t/p/original${movie.poster_path}"
+        val title = movie.title
+        val movieDescription =movie.overview
+        val painter =
+            rememberAsyncImagePainter(imageLink)
+        val state = painter.state.collectAsStateWithLifecycle()
+        val scrollState = rememberScrollState()
+        Column(modifier = Modifier.verticalScroll(scrollState)) {
 
-                Box(
-                    Modifier
+            Box(
+                Modifier
+                    .fillMaxWidth()
+                    .height(400.dp)
+                    .background(MaterialTheme.colorScheme.inverseSurface)
+            ) {
+                when (state.value) {
+                    is AsyncImagePainter.State.Empty -> {
+                        Text("Empty")
+                    }
+
+                    is AsyncImagePainter.State.Loading -> {
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+                            CircularProgressIndicator()}
+                    }
+
+                    is AsyncImagePainter.State.Success -> {
+                        Image(
+                            modifier = Modifier.fillMaxSize(),
+                            painter = painter,
+                            contentDescription = "duck"
+                        )
+                    }
+
+                    else -> {
+                        Text(state.value.toString())
+                    }
+                }
+            }
+            Column(Modifier.fillMaxSize()) {
+                Text(
+                    modifier = Modifier
                         .fillMaxWidth()
-                        .height(400.dp)
-                        .background(MaterialTheme.colorScheme.inverseSurface)
+                        .padding(20.dp),
+                    text = title,
+                    fontSize = 40.sp,
+                    style = TextStyle(lineHeight = 40.sp),
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Left
+                )
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp), text = movieDescription
+
+                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp), horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    when (state.value) {
-                        is AsyncImagePainter.State.Empty -> {
-                            Text("Empty")
-                        }
-
-                        is AsyncImagePainter.State.Loading -> {
-                            Box(
-                                modifier = Modifier.fillMaxSize(),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                CircularProgressIndicator()
-                            }
-                        }
-
-                        is AsyncImagePainter.State.Success -> {
-                            Image(
-                                modifier = Modifier.fillMaxSize(),
-                                painter = painter,
-                                contentDescription = "duck"
-                            )
-                        }
-
-                        else -> {
-                            Text(state.value.toString())
-                        }
-                    }
-                }
-                Column(Modifier.fillMaxSize()) {
-                    Text(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(20.dp),
-                        text = title,
-                        fontSize = 40.sp,
-                        style = TextStyle(lineHeight = 40.sp),
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Left
-                    )
-                    Text(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(20.dp), text = movieDescription
-
-                    )
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(20.dp), horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Button(
-                            onClick = {},
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.errorContainer,
-                                contentColor = MaterialTheme.colorScheme.onSurface
-                            )
-                        ) { Text("Add to favourites") }
-                        Button(
-                            onClick = {},
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceBright,
-                                contentColor = MaterialTheme.colorScheme.onSurface
-                            )
-                        ) { Text("Share") }
-                    }
+                    Button(
+                        onClick = {},
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.errorContainer,
+                            contentColor = MaterialTheme.colorScheme.onSurface
+                        )
+                    ) { Text("Add to favourites") }
+                    Button(
+                        onClick = {},
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceBright,
+                            contentColor = MaterialTheme.colorScheme.onSurface
+                        )
+                    ) { Text("Share") }
                 }
             }
-        }
+        }}
     }
 }

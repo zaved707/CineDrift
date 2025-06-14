@@ -38,6 +38,9 @@ class MovieDetailsPageViewModel @AssistedInject constructor(
         fetchData()
     }
 
+    override fun onCleared() {
+        println("details Page ViewModel Deleted")
+    }
     fun fetchData(){
         viewModelScope.launch (Dispatchers.IO){
             try {
