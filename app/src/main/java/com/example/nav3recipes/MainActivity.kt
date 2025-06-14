@@ -69,7 +69,8 @@ class RecipePickerActivity : ComponentActivity() {
                                 when(key) {
                                     is MainPageRoute -> {
                                         NavEntry(key= key){
-                                            MainPage(backStack)
+                                            val viewModel = hiltViewModel<MainPageViewModel>()
+                                            MainPage(backStack,viewModel)
 
                                         }
                                     }

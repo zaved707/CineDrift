@@ -5,17 +5,14 @@ import androidx.lifecycle.viewModelScope
 import com.example.nav3recipes.MovieDetailPageRoute
 import com.example.nav3recipes.movieDetailModel.MovieDetailModel
 import com.example.nav3recipes.retrofitApi.MovieDetailApi
-
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.io.IOException
-import java.net.SocketTimeoutException
-import java.net.UnknownHostException
 
 @HiltViewModel(assistedFactory = MovieDetailsPageViewModel.Factory::class)
 class MovieDetailsPageViewModel @AssistedInject constructor(
@@ -42,7 +39,7 @@ class MovieDetailsPageViewModel @AssistedInject constructor(
     }
 
     fun fetchData(){
-        viewModelScope.launch {
+        viewModelScope.launch (Dispatchers.IO){
             try {
                 _isLoading.value = true
                 _error.value = null // Clear previous errors
@@ -57,20 +54,10 @@ class MovieDetailsPageViewModel @AssistedInject constructor(
                     _error.value = "Failed to fetch movie: ${response.code()}"
                     println("Cannot find movie: ${response.code()}")
                 }
-            } catch (e: UnknownHostException) {
-                _error.value = "No internet connection. Please check your network."
-                println("No internet: ${e.message}")
-
-            } catch (e: SocketTimeoutException) {
-                _error.value = "Request timed out. Please try again."
-                println("Timeout: ${e.message}")
-            } catch (e: IOException) {
-                _error.value = "Network error occurred. Please try again."
-                println("Network error: ${e.message}")
             } catch (e: Exception) {
-                _error.value = "Unexpected error: ${e.message}"
-                println("Unexpected error: ${e.message}")
-            } finally {
+                _error.value = "Failed to fetch movie. Please try again."
+                println("Error: ${e.message}")}
+            finally {
                 _isLoading.value = false
             }
         }

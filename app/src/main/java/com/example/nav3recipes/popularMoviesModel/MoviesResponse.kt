@@ -1,6 +1,6 @@
 package com.example.nav3recipes.popularMoviesModel
 
-data class PopularMoviesModel(
+data class MoviesResponse(
     val page: Int,
     val results: List<Result>,
     val total_pages: Int,
