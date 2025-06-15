@@ -19,16 +19,17 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.jetbrains.kotlin.serialization)
+
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
 }
 
 android {
-    namespace = "com.example.nav3recipes"
+    namespace = "com.zavedahmad.cineDrift"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.nav3recipes"
+        applicationId = "com.zavedahmad.CineDrift"
         minSdk = 24
         targetSdk = 35
         versionCode = 1
@@ -59,6 +60,18 @@ android {
 }
 
 dependencies {
+
+    //room imports
+    val roomVersion = "2.7.1"
+
+    implementation("androidx.room:room-runtime:$roomVersion")
+
+
+    ksp("androidx.room:room-compiler:$roomVersion")
+
+
+    annotationProcessor("androidx.room:room-compiler:$roomVersion")
+    //end
 //    retrofit imports
     val retrofitVersion= "3.0.0"
     implementation("com.squareup.retrofit2:converter-gson:$retrofitVersion")
