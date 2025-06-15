@@ -117,7 +117,7 @@ class RecipePickerActivity : ComponentActivity() {
                                 when (key) {
                                     is SearchPageRoute -> NavEntry(key = key) {
 
-                                            SearchScreen(viewModelSearchScreen)
+                                            SearchScreen(backStack,  viewModelSearchScreen)
 
                                     }
 

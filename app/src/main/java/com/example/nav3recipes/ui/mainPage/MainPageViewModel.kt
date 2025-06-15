@@ -36,8 +36,10 @@ class MainPageViewModel @Inject constructor(val movieDetailApi: MovieDetailApi) 
     val error = _error.asStateFlow()
 
 
-
     init {
+        fetchData()
+    }
+    fun fetchData() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 _isLoading.value = true

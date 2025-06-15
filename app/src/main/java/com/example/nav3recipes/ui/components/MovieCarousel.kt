@@ -1,10 +1,12 @@
 package com.example.nav3recipes.ui.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -36,7 +38,7 @@ fun MovieCarousel(backStack: SnapshotStateList<Any>,movies: MoviesResponse){
                 rememberAsyncImagePainter(imageLink)
             val state = painter.state.collectAsStateWithLifecycle()
             Column {
-                Card(onClick = {backStack.add(MovieDetailPageRoute(item.id.toString()))}) {
+                Card(modifier = Modifier.width(200.dp), onClick = {backStack.add(MovieDetailPageRoute(item.id.toString()))}) {
                     Box(
                         modifier = Modifier.size(width = 200.dp, height = 280.dp)
                             .padding(20.dp), contentAlignment = Alignment.Center
@@ -68,12 +70,12 @@ fun MovieCarousel(backStack: SnapshotStateList<Any>,movies: MoviesResponse){
                     }
 
 
+                    Column(modifier = Modifier.fillMaxWidth().height(80.dp).padding(10.dp)) {
+                        Text(item.title)
+
+                    }
                 }
-                Spacer(modifier = Modifier.height(20.dp))
-                Column (modifier = Modifier.width(200.dp).height(100.dp)){
-                    Text(item.title)
-                    Text(item.id.toString())
-                }
+                Spacer(modifier = Modifier.height(50.dp))
             }
             Spacer(modifier = Modifier.width(20.dp))
         }
