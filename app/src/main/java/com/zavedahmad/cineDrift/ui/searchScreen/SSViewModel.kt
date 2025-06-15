@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zavedahmad.cineDrift.popularMoviesModel.MoviesResponse
 import com.zavedahmad.cineDrift.retrofitApi.MovieDetailApi
+import com.zavedahmad.cineDrift.roomDatabase.PreferencesDao
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 
@@ -14,6 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel()
 class SSViewModel @Inject constructor(
+    val preferencesDao: PreferencesDao,
     val movieApi: MovieDetailApi
 ): ViewModel(){
     private val _searchQuery = MutableStateFlow<String>("")
@@ -24,9 +26,22 @@ class SSViewModel @Inject constructor(
     val error = _error.asStateFlow()
     private val _movies = MutableStateFlow<MoviesResponse?>(null)
     val movies = _movies.asStateFlow()
-    val authToken = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIxYzAxMmM3MTRkNzQxYTFjODI2MTQwNWRlY2I0NGUxZCIsIm5iZiI6MTc0Mzk0ODYzOS44ODIsInN1YiI6IjY3ZjI4YjVmZTFkNWMyM2M2ZWQ5NTc3YyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.Pi_yYhz9wJV7f-6qzcY6hBczzLbmk0etPBdQ9_NL3D0"
+    private val  _authToken = MutableStateFlow<String>("")
+    val authToken = _authToken.asStateFlow()
+
     fun changeSearchQuery(newQuery :String){
         _searchQuery.value= newQuery
+    }
+    fun setApiKeyAndFetchData(){
+        viewModelScope.launch(){
+            _authToken.value = preferencesDao.getPreference("ApiKey").value?:  "empty"
+            if (_authToken.value != "empty") {
+                fetchData()
+            } else {
+                _error.value = "API key is empty"
+            }
+        }
+
     }
     fun fetchData(){
         viewModelScope.launch (Dispatchers.IO){
@@ -38,7 +53,7 @@ class SSViewModel @Inject constructor(
                     includeAdult = false,
                     page = 1,
                     language = "en-US",
-                    authHeader = "Bearer $authToken"
+                    authHeader = "Bearer ${authToken.value}"
                 )
                 if(response.isSuccessful){
                     _movies.value =response.body()

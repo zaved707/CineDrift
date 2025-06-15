@@ -24,10 +24,12 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
@@ -51,6 +53,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavKey
 import coil3.compose.AsyncImagePainter
 import coil3.compose.rememberAsyncImagePainter
+import com.zavedahmad.cineDrift.Screen
 import com.zavedahmad.cineDrift.Screen.MovieDetailPageRoute
 import com.zavedahmad.cineDrift.ui.components.MyBottomBar
 
@@ -62,6 +65,7 @@ fun SearchScreen(backStack :  SnapshotStateList<NavKey>, viewModel: SSViewModel)
     val error by viewModel.error.collectAsStateWithLifecycle()
     val query = viewModel.searchQuery.collectAsStateWithLifecycle().value
     val movies = viewModel.movies.collectAsStateWithLifecycle().value
+
     Scaffold (modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         bottomBar = {
 
@@ -71,7 +75,7 @@ fun SearchScreen(backStack :  SnapshotStateList<NavKey>, viewModel: SSViewModel)
 
             TopAppBar(
                 title = { Text("Search") },
-
+                actions = { IconButton(onClick = {backStack.add(Screen.SettingsPageRoute)}){ Icon(imageVector = Icons.Outlined.Settings, contentDescription = "Settings") }},
                 scrollBehavior = scrollBehavior
 
             )
@@ -91,7 +95,7 @@ fun SearchScreen(backStack :  SnapshotStateList<NavKey>, viewModel: SSViewModel)
             onValueChange = { viewModel.changeSearchQuery(it) },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
             keyboardActions = KeyboardActions(onSearch = {
-                viewModel.fetchData()
+                viewModel.setApiKeyAndFetchData()
             }),
             placeholder = {
                 Row {
