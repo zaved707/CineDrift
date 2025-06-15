@@ -1,7 +1,6 @@
 package com.zavedahmad.cineDrift.ui.components
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
@@ -11,10 +10,11 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.zavedahmad.cineDrift.FavouritePageRoute
-import com.zavedahmad.cineDrift.MainPageRoute
-import com.zavedahmad.cineDrift.ProfilePageRoute
-import com.zavedahmad.cineDrift.SearchPageRoute
+import androidx.navigation3.runtime.NavKey
+import com.zavedahmad.cineDrift.Screen
+import com.zavedahmad.cineDrift.Screen.FavouritePageRoute
+import com.zavedahmad.cineDrift.Screen.MainPageRoute
+import com.zavedahmad.cineDrift.Screen.SearchPageRoute
 
 data class ActivePageTracker(
     var homePage: Boolean,
@@ -24,7 +24,7 @@ data class ActivePageTracker(
 
 )
 
-val BottomBarItems = listOf<Any>(
+val BottomBarItems = listOf<Screen>(
     MainPageRoute,
     SearchPageRoute,
 
@@ -40,7 +40,7 @@ val icons = listOf<ImageVector>(
 )
 
 @Composable
-fun MyBottomBar(backStack: SnapshotStateList<Any>) {
+fun MyBottomBar(backStack: SnapshotStateList<NavKey>) {
 
     NavigationBar {
         BottomBarItems.forEachIndexed { index, element ->

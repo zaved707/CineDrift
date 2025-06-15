@@ -21,15 +21,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation3.runtime.NavKey
 import coil3.compose.AsyncImagePainter
 import coil3.compose.rememberAsyncImagePainter
-import com.zavedahmad.cineDrift.MovieDetailPageRoute
+import com.zavedahmad.cineDrift.Screen.MovieDetailPageRoute
 import com.zavedahmad.cineDrift.popularMoviesModel.MoviesResponse
 
 //horizontal movie corousal with a title
 
 @Composable
-fun MovieCarousel(backStack: SnapshotStateList<Any>,movies: MoviesResponse){
+fun MovieCarousel(backStack:  SnapshotStateList<NavKey>,movies: MoviesResponse){
     LazyRow {
         items(movies.results) { item ->
             val imageLink = "https://image.tmdb.org/t/p/w185${item.poster_path}"
@@ -37,7 +38,7 @@ fun MovieCarousel(backStack: SnapshotStateList<Any>,movies: MoviesResponse){
                 rememberAsyncImagePainter(imageLink)
             val state = painter.state.collectAsStateWithLifecycle()
             Column {
-                Card(modifier = Modifier.width(200.dp), onClick = {backStack.add(MovieDetailPageRoute(item.id.toString()))}) {
+                Card(modifier = Modifier.width(200.dp), onClick = {backStack.add((MovieDetailPageRoute(item.id.toString())))}) {
                     Box(
                         modifier = Modifier.size(width = 200.dp, height = 280.dp)
                             .padding(20.dp), contentAlignment = Alignment.Center

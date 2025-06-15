@@ -38,13 +38,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation3.runtime.NavKey
 import coil3.compose.AsyncImagePainter
 import coil3.compose.rememberAsyncImagePainter
-import com.zavedahmad.cineDrift.MovieDetailPageRoute
+import com.zavedahmad.cineDrift.Screen.MovieDetailPageRoute
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun SearchScreen(backStack : SnapshotStateList<Any>, viewModel: SSViewModel) {
+fun SearchScreen(backStack :  SnapshotStateList<NavKey>, viewModel: SSViewModel) {
 
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val error by viewModel.error.collectAsStateWithLifecycle()

@@ -2,7 +2,8 @@ package com.zavedahmad.cineDrift.ui.movieDetailsPage
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.zavedahmad.cineDrift.MovieDetailPageRoute
+
+import com.zavedahmad.cineDrift.Screen.MovieDetailPageRoute
 import com.zavedahmad.cineDrift.movieDetailModel.MovieDetailModel
 import com.zavedahmad.cineDrift.retrofitApi.MovieDetailApi
 import dagger.assisted.Assisted

@@ -22,12 +22,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation3.runtime.NavKey
 import com.zavedahmad.cineDrift.ui.components.MovieCarousel
 import com.zavedahmad.cineDrift.ui.components.ShimmerBlocksMain
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun MainPage(backStack: SnapshotStateList<Any>, viewModel: MainPageViewModel) {
+fun MainPage(backStack:  SnapshotStateList<NavKey>, viewModel: MainPageViewModel) {
 
 
     val scrollState = rememberScrollState()

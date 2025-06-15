@@ -24,6 +24,8 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavEntry
+import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import androidx.navigation3.ui.rememberSceneSetupNavEntryDecorator
@@ -39,28 +41,25 @@ import com.zavedahmad.cineDrift.ui.theme.Nav3RecipesTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.serialization.Serializable
 
-@Serializable
-data object MainPageRoute
+sealed class Screen : NavKey {
+    @Serializable
+    data object MainPageRoute :Screen()
 
-@Serializable
-data object SearchPageRoute
+    @Serializable
+    data object SearchPageRoute  : Screen()
 
-@Serializable
-data object FavouritePageRoute
+    @Serializable
+    data object FavouritePageRoute : Screen()
 
-@Serializable
-data object ProfilePageRoute
+    @Serializable
+    data object SettingsPageRoute: Screen()
 
 
-@Serializable
-data class MovieDetailPageRoute(val id: String)
+    @Serializable
+    data class MovieDetailPageRoute(val id: String): Screen()
+}
 
-val BottomBarItems = listOf<Any>(
-    SearchPageRoute,
-    MainPageRoute,
-    FavouritePageRoute,
-    ProfilePageRoute
-)
+
 
 @AndroidEntryPoint
 class RecipePickerActivity : ComponentActivity() {
@@ -69,10 +68,10 @@ class RecipePickerActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setEdgeToEdgeConfig()
         setContent {
-            val backStack = remember { mutableStateListOf<Any>(MainPageRoute) }
+            val backStack = rememberNavBackStack<Screen>(Screen.MainPageRoute)
             val viewModelMainPage = hiltViewModel<MainPageViewModel>()
             val viewModelSearchScreen = hiltViewModel<SSViewModel>()
-            val isTopMainPageRoute =if( backStack.lastOrNull() is MainPageRoute || backStack.lastOrNull() is SearchPageRoute || backStack.lastOrNull() is ProfilePageRoute || backStack.lastOrNull() is FavouritePageRoute  ){true}else{
+            val isTopMainPageRoute =if( backStack.lastOrNull() is Screen.MainPageRoute || backStack.lastOrNull() is Screen.SearchPageRoute || backStack.lastOrNull() is Screen.FavouritePageRoute  ){true}else{
                 false
             }
             Nav3RecipesTheme {
@@ -115,13 +114,12 @@ class RecipePickerActivity : ComponentActivity() {
                             ),
                             entryProvider = { key ->
                                 when (key) {
-                                    is SearchPageRoute -> NavEntry(key = key) {
-
+                                    is Screen.SearchPageRoute -> NavEntry(key = key) {
                                             SearchScreen(backStack,  viewModelSearchScreen)
 
                                     }
 
-                                    is MainPageRoute -> {
+                                    is Screen.MainPageRoute -> {
                                         NavEntry(key = key) {
 
                                             Column {
@@ -130,15 +128,15 @@ class RecipePickerActivity : ComponentActivity() {
                                             }
                                         }
                                     }
-                                    is ProfilePageRoute->{
+                                    is Screen.SettingsPageRoute->{
                                         NavEntry(key= key){ Box(
                                             modifier = Modifier.fillMaxSize(),
                                             contentAlignment = Alignment.Center
                                         ) {
-                                            Text("Profile Screen")
+                                            Text("Settings Screen")
                                         }}
                                     }
-                                    is FavouritePageRoute->{
+                                    is Screen.FavouritePageRoute->{
                                         NavEntry(key= key){ Box(
                                             modifier = Modifier.fillMaxSize(),
                                             contentAlignment = Alignment.Center
@@ -146,7 +144,7 @@ class RecipePickerActivity : ComponentActivity() {
                                             Text("Favourite Screen")
                                         }}
                                     }
-                                    is MovieDetailPageRoute -> {
+                                    is Screen.MovieDetailPageRoute -> {
                                         NavEntry(key = key) {
                                             val viewModel =
                                                 hiltViewModel<MovieDetailsPageViewModel, MovieDetailsPageViewModel.Factory>(
