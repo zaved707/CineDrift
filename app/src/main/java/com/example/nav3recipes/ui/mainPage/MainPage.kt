@@ -17,7 +17,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -28,12 +27,12 @@ fun MainPage(backStack: SnapshotStateList<Any>, viewModel: MainPageViewModel) {
 
 
     val scrollState = rememberScrollState()
-    Column (modifier = Modifier.verticalScroll(scrollState)){
+    Column(modifier = Modifier.verticalScroll(scrollState)) {
 
         val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
         val error by viewModel.error.collectAsStateWithLifecycle()
         val popularMovies = viewModel.popularMovies.collectAsStateWithLifecycle().value
-        val topRatedMovies= viewModel.topRatedMoviess.collectAsStateWithLifecycle().value
+        val topRatedMovies = viewModel.topRatedMoviess.collectAsStateWithLifecycle().value
         Text("Popular Movies", style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 40.sp))
         HorizontalDivider()
         Spacer(modifier = Modifier.height(20.dp))
@@ -41,7 +40,8 @@ fun MainPage(backStack: SnapshotStateList<Any>, viewModel: MainPageViewModel) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(error.toString())
             }
-        } else {
+        }
+        else {
             if (isLoading) {
                 CircularProgressIndicator()
             } else if (popularMovies == null) {

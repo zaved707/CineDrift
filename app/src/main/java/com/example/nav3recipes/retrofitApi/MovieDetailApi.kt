@@ -25,4 +25,14 @@ interface MovieDetailApi {
         @Header("Authorization") authHeader: String,
         @Header("accept") acceptHeader: String = "application/json"
     ): Response<MoviesResponse>
+
+    @GET("search/movie")
+    suspend fun getMoviesBySearch(
+        @Query("query") query:String,
+        @Query("include_adult") includeAdult : Boolean,
+        @Query("page") page: Int,
+        @Query("language") language: String = "en-US",
+        @Header("Authorization") authHeader: String,
+        @Header("accept") acceptHeader: String = "application/json"
+    ): Response<MoviesResponse>
 }

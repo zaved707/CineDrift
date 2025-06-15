@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -22,7 +21,6 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavEntry
@@ -34,6 +32,8 @@ import com.example.nav3recipes.ui.mainPage.MainPage
 import com.example.nav3recipes.ui.mainPage.MainPageViewModel
 import com.example.nav3recipes.ui.movieDetailsPage.MovieDetailsPage
 import com.example.nav3recipes.ui.movieDetailsPage.MovieDetailsPageViewModel
+import com.example.nav3recipes.ui.searchScreen.SSViewModel
+import com.example.nav3recipes.ui.searchScreen.SearchScreen
 import com.example.nav3recipes.ui.setEdgeToEdgeConfig
 import com.example.nav3recipes.ui.theme.Nav3RecipesTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -71,6 +71,7 @@ class RecipePickerActivity : ComponentActivity() {
         setContent {
             val backStack = remember { mutableStateListOf<Any>(MainPageRoute) }
             val viewModelMainPage = hiltViewModel<MainPageViewModel>()
+            val viewModelSearchScreen = hiltViewModel<SSViewModel>()
             val isTopMainPageRoute =if( backStack.lastOrNull() is MainPageRoute || backStack.lastOrNull() is SearchPageRoute || backStack.lastOrNull() is ProfilePageRoute || backStack.lastOrNull() is FavouritePageRoute  ){true}else{
                 false
             }
@@ -115,12 +116,9 @@ class RecipePickerActivity : ComponentActivity() {
                             entryProvider = { key ->
                                 when (key) {
                                     is SearchPageRoute -> NavEntry(key = key) {
-                                        Box(
-                                            modifier = Modifier.fillMaxSize(),
-                                            contentAlignment = Alignment.Center
-                                        ) {
-                                            Text("Search Screen")
-                                        }
+
+                                            SearchScreen(viewModelSearchScreen)
+
                                     }
 
                                     is MainPageRoute -> {
