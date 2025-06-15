@@ -1,5 +1,8 @@
 package com.zavedahmad.cineDrift.ui.searchScreen
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -22,19 +25,26 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -42,16 +52,31 @@ import androidx.navigation3.runtime.NavKey
 import coil3.compose.AsyncImagePainter
 import coil3.compose.rememberAsyncImagePainter
 import com.zavedahmad.cineDrift.Screen.MovieDetailPageRoute
+import com.zavedahmad.cineDrift.ui.components.MyBottomBar
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(backStack :  SnapshotStateList<NavKey>, viewModel: SSViewModel) {
-
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val error by viewModel.error.collectAsStateWithLifecycle()
     val query = viewModel.searchQuery.collectAsStateWithLifecycle().value
     val movies = viewModel.movies.collectAsStateWithLifecycle().value
-    Column {
+    Scaffold (modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        bottomBar = {
+
+            MyBottomBar(backStack)
+
+    },topBar = {
+
+            TopAppBar(
+                title = { Text("Search") },
+
+                scrollBehavior = scrollBehavior
+
+            )
+    }){  innerPadding ->
+    Column (modifier = Modifier.padding(innerPadding)){
         OutlinedTextField(
             leadingIcon = {
                 Icon(
@@ -165,5 +190,5 @@ fun SearchScreen(backStack :  SnapshotStateList<NavKey>, viewModel: SSViewModel)
                 }
             }
         }
-    }
+    }}
 }

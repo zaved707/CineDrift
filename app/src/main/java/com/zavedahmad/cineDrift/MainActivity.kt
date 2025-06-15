@@ -30,6 +30,7 @@ import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import androidx.navigation3.ui.rememberSceneSetupNavEntryDecorator
 import com.zavedahmad.cineDrift.ui.components.MyBottomBar
+import com.zavedahmad.cineDrift.ui.favouritesScreen.FavouritesScreen
 import com.zavedahmad.cineDrift.ui.mainPage.MainPage
 import com.zavedahmad.cineDrift.ui.mainPage.MainPageViewModel
 import com.zavedahmad.cineDrift.ui.movieDetailsPage.MovieDetailsPage
@@ -77,28 +78,11 @@ class RecipePickerActivity : ComponentActivity() {
             Nav3RecipesTheme {
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
-                    bottomBar = {
-                        AnimatedVisibility(
-                            visible = isTopMainPageRoute,
-                            enter = slideInVertically(initialOffsetY = { it }),
-                            exit = fadeOut()
-                        ) {
-                            MyBottomBar(backStack)
-                        }
-                    },
-                    topBar = {
 
-                        TopAppBar(
-                            title = { Text("Movies") },
-                            colors = TopAppBarDefaults.topAppBarColors(
-                                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                            )
-                        )
-                    }) { innerPadding ->
-                    var absolutePadding = PaddingValues(top = innerPadding.calculateTopPadding())
+                    ) { innerPadding ->
+                    var absolutePadding = PaddingValues()
                     if (isTopMainPageRoute) {
-                        absolutePadding = innerPadding
+                        absolutePadding = PaddingValues(bottom = innerPadding.calculateBottomPadding())
                     }
 
                     Box(modifier = Modifier.padding(absolutePadding)) {
@@ -141,7 +125,7 @@ class RecipePickerActivity : ComponentActivity() {
                                             modifier = Modifier.fillMaxSize(),
                                             contentAlignment = Alignment.Center
                                         ) {
-                                            Text("Favourite Screen")
+                                            FavouritesScreen(backStack)
                                         }}
                                     }
                                     is Screen.MovieDetailPageRoute -> {
