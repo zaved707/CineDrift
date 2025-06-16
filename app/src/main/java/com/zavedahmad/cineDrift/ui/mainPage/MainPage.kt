@@ -44,7 +44,7 @@ fun MainPage(backStack: SnapshotStateList<NavKey>, viewModel: MainPageViewModel)
     val popularMovies = viewModel.popularMovies.collectAsStateWithLifecycle().value
     val topRatedMovies = viewModel.topRatedMoviess.collectAsStateWithLifecycle().value
 
-    PullToRefreshBox(isRefreshing = isLoading, onRefresh = { viewModel.setApiKeyAndFetchData() }) {
+
         Scaffold(
             modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
             bottomBar = {
@@ -56,11 +56,12 @@ fun MainPage(backStack: SnapshotStateList<NavKey>, viewModel: MainPageViewModel)
 
 
 
-        }) { padding ->
+        }) { innerpadding ->
+            PullToRefreshBox(modifier = Modifier.padding(innerpadding), isRefreshing = isLoading, onRefresh = { viewModel.setApiKeyAndFetchData() }) {
 
             Column(modifier = Modifier
                 .verticalScroll(scrollState)
-                .padding(padding)) {
+                .padding()) {
 
                 Column( modifier = Modifier.padding(horizontal = 20.dp)) {
 

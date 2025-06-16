@@ -74,7 +74,7 @@ fun SearchScreen(backStack: SnapshotStateList<NavKey>, viewModel: SSViewModel) {
         }) { innerPadding ->
 
         Column(
-            modifier = Modifier.padding(innerPadding),
+            modifier = Modifier.padding(innerPadding).fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 //
