@@ -34,10 +34,11 @@ class SSViewModel @Inject constructor(
     }
     fun setApiKeyAndFetchData(){
         viewModelScope.launch(){
-            _authToken.value = preferencesDao.getPreference("ApiKey").value?:  "empty"
+            _authToken.value = preferencesDao.getPreference("ApiKey")?.value?:  "empty"
             if (_authToken.value != "empty") {
                 fetchData()
             } else {
+                _isLoading.value=false
                 _error.value = "API key is empty"
             }
         }

@@ -33,11 +33,18 @@ android {
         minSdk = 24
         targetSdk = 35
         versionCode = 1
-        versionName = "1.0"
+        versionName = "0.0.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
-
+    splits {
+        abi {
+            isEnable = true
+            reset() // Clears the default list of ABIs
+            include("arm64-v8a") // Only include arm64-v8a
+            isUniversalApk = false // Disable universal APK (optional, if you don't want a universal APK)
+        }
+    }
     buildTypes {
         release {
             isMinifyEnabled = false

@@ -35,7 +35,7 @@ class SettingsViewModel @Inject constructor(val preferencesDao: PreferencesDao) 
 
     fun getApiFromDB() {
         viewModelScope.launch {
-            _userInput.value= preferencesDao.getPreference("ApiKey").value
+            _userInput.value= preferencesDao.getPreference("ApiKey")?.value?: "empty"
         }
     }
 }
