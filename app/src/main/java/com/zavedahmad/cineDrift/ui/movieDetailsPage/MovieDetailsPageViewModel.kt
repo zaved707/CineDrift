@@ -6,6 +6,10 @@ import androidx.lifecycle.viewModelScope
 import com.zavedahmad.cineDrift.Screen.MovieDetailPageRoute
 import com.zavedahmad.cineDrift.movieDetailModel.MovieDetailModel
 import com.zavedahmad.cineDrift.retrofitApi.MovieDetailApi
+import com.zavedahmad.cineDrift.roomDatabase.FavouritesDao
+import com.zavedahmad.cineDrift.roomDatabase.FavouritesEntity
+//import com.zavedahmad.cineDrift.roomDatabase.FavouritesDao
+//import com.zavedahmad.cineDrift.roomDatabase.FavouritesEntity
 import com.zavedahmad.cineDrift.roomDatabase.PreferencesDao
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -20,7 +24,8 @@ import kotlinx.coroutines.launch
 class MovieDetailsPageViewModel @AssistedInject constructor(
     @Assisted val navKey: MovieDetailPageRoute,
     val movieApi: MovieDetailApi,
-    val preferencesDao: PreferencesDao
+    val preferencesDao: PreferencesDao,
+    val favouritesDao: FavouritesDao
 ) : ViewModel() {
 
     @AssistedFactory
@@ -54,6 +59,13 @@ class MovieDetailsPageViewModel @AssistedInject constructor(
                 _isLoading.value=false
                 _error.value = "API key is empty"
             }
+        }
+
+    }
+    fun addToFavourite(){
+
+        _movie.value?.let {item->
+            viewModelScope.launch(Dispatchers.IO) { favouritesDao.addMovie(FavouritesEntity(navKey.id, item)) }
         }
 
     }

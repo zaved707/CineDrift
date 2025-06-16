@@ -29,9 +29,12 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImagePainter
 import coil3.compose.rememberAsyncImagePainter
+import com.zavedahmad.cineDrift.roomDatabase.FavouritesDao
+
+//import com.zavedahmad.cineDrift.roomDatabase.FavouritesDao
 
 @Composable
-fun MovieDetailsPage(viewModel: MovieDetailsPageViewModel) {
+fun MovieDetailsPage (viewModel: MovieDetailsPageViewModel) {
 
     val movie = viewModel.movie.collectAsStateWithLifecycle().value
     val error by viewModel.error.collectAsStateWithLifecycle()
@@ -109,7 +112,7 @@ fun MovieDetailsPage(viewModel: MovieDetailsPageViewModel) {
                         .padding(20.dp), horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Button(
-                        onClick = {},
+                        onClick = {viewModel.addToFavourite()},
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.errorContainer,
                             contentColor = MaterialTheme.colorScheme.onSurface

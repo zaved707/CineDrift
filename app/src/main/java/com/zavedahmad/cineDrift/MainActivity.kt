@@ -21,6 +21,8 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import androidx.navigation3.ui.rememberSceneSetupNavEntryDecorator
+import com.zavedahmad.cineDrift.ui.favouritesScreen.FaScViewModel
+//import com.zavedahmad.cineDrift.ui.favouritesScreen.FaScViewModel
 import com.zavedahmad.cineDrift.ui.favouritesScreen.FavouritesScreen
 import com.zavedahmad.cineDrift.ui.mainPage.MainPage
 import com.zavedahmad.cineDrift.ui.mainPage.MainPageViewModel
@@ -63,7 +65,7 @@ class RecipePickerActivity : ComponentActivity() {
         setEdgeToEdgeConfig()
         setContent {
             val backStack = rememberNavBackStack<Screen>(Screen.MainPageRoute)
-
+            val viewModelFavouritesPage = hiltViewModel<FaScViewModel>()
             val viewModelMainPage = hiltViewModel<MainPageViewModel>()
             val viewModelSearchScreen = hiltViewModel<SSViewModel>()
             val isTopMainPageRoute =if( backStack.lastOrNull() is Screen.MainPageRoute || backStack.lastOrNull() is Screen.SearchPageRoute || backStack.lastOrNull() is Screen.FavouritePageRoute  ){true}else{
@@ -122,7 +124,7 @@ class RecipePickerActivity : ComponentActivity() {
                                             modifier = Modifier.fillMaxSize(),
                                             contentAlignment = Alignment.Center
                                         ) {
-                                            FavouritesScreen(backStack)
+                                            FavouritesScreen(backStack,viewModelFavouritesPage)
                                         }}
                                     }
                                     is Screen.MovieDetailPageRoute -> {

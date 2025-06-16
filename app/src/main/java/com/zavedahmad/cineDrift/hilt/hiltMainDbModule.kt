@@ -2,6 +2,8 @@ package com.zavedahmad.cineDrift.hilt
 
 import android.content.Context
 import androidx.room.Room
+import com.zavedahmad.cineDrift.roomDatabase.FavouritesDao
+//import com.zavedahmad.cineDrift.roomDatabase.FavouritesDao
 
 import com.zavedahmad.cineDrift.roomDatabase.MainDatabase
 import com.zavedahmad.cineDrift.roomDatabase.PreferencesDao
@@ -25,5 +27,9 @@ object HiltMainDbModule {
     @Provides
     fun providePreferencesDao(database: MainDatabase): PreferencesDao{
         return database.preferencesDao()
+    }
+    @Provides
+    fun provideFavouritesDao(database: MainDatabase): FavouritesDao{
+        return database.favouritesDao()
     }
 }

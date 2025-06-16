@@ -41,6 +41,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Nav3Recipes"
+rootProject.name = "CineDrift"
 include(":app")
  
