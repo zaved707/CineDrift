@@ -2,7 +2,7 @@ todo implement dark Light theme in Settings
 todo add more items to home screen
 todo check api key validity
 todo add a placeholder for when user has no API
-todo add a better empty placeHolder for Search Screen
+todo// ComPLETED add a better empty placeHolder for Search Screen
 todo://COMPLETED make favouritesButton in Details page responsive to if the user has added the movie to favourite
 todo //COMPLETED unify the topApp Bars
 todo //COMPLETED add topApp bar to MovieDetailsPage

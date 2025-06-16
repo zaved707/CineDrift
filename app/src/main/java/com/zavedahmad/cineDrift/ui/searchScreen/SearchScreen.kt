@@ -1,7 +1,6 @@
 package com.zavedahmad.cineDrift.ui.searchScreen
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,12 +10,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.KeyboardActionHandler
 import androidx.compose.foundation.text.input.TextFieldLineLimits
@@ -28,7 +27,6 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -74,7 +72,9 @@ fun SearchScreen(backStack: SnapshotStateList<NavKey>, viewModel: SSViewModel) {
         }) { innerPadding ->
 
         Column(
-            modifier = Modifier.padding(innerPadding).fillMaxWidth(),
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 //
@@ -115,7 +115,7 @@ fun SearchScreen(backStack: SnapshotStateList<NavKey>, viewModel: SSViewModel) {
             }
 
 
-
+            Spacer(modifier = Modifier.height(20.dp))
 
             if (error != null) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -123,12 +123,26 @@ fun SearchScreen(backStack: SnapshotStateList<NavKey>, viewModel: SSViewModel) {
                 }
             } else {
                 if (isLoading) {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Top,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
                         LoadingIndicator()
                     }
                 } else if (movies == null) {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text("Empty")
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Icon(
+                            Icons.Default.Search,
+                            modifier = Modifier.size(200.dp),
+                            contentDescription = "placeholderr",
+                            tint = MaterialTheme.colorScheme.onSecondaryContainer
+                        )
+
                     }
                 } else {
                     Column(

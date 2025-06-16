@@ -1,5 +1,6 @@
 package com.zavedahmad.cineDrift.ui.movieDetailsPage
 
+import android.graphics.Paint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -10,11 +11,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -27,6 +32,7 @@ import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
@@ -43,7 +49,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavKey
 import coil3.compose.AsyncImagePainter
 import coil3.compose.rememberAsyncImagePainter
-import com.zavedahmad.cineDrift.ui.components.MyTopABCommon
+import com.valentinilk.shimmer.shimmer
+import com.zavedahmad.cineDrift.Screen
 
 //import com.zavedahmad.cineDrift.roomDatabase.FavouritesDao
 
@@ -55,6 +62,63 @@ fun MovieDetailsPage(viewModel: MovieDetailsPageViewModel, backStack: SnapshotSt
     val error by viewModel.error.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val isFavourite by viewModel.isFavourite.collectAsStateWithLifecycle()
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
+    Scaffold(topBar = {
+        TopAppBar(
+            title = { Text("Details") },
+            actions = {
+                Row {
+                    when (isFavourite) {
+                        true -> {
+                            IconButton(
+                                onClick = { viewModel.deleteFromFavourite() },
+                                colors = IconButtonDefaults.iconButtonColors(
+                                    containerColor = MaterialTheme.colorScheme.errorContainer,
+                                    contentColor = MaterialTheme.colorScheme.onSurface
+                                )
+                            ) {
+                                Icon(
+                                    Icons.Default.Favorite,
+                                    contentDescription = "Unlike"
+                                )
+                            }
+                        }
+
+                        false -> {
+                            IconButton(
+                                onClick = { viewModel.addToFavourite() },
+                                colors = IconButtonDefaults.iconButtonColors(
+                                    containerColor = MaterialTheme.colorScheme.errorContainer,
+                                    contentColor = MaterialTheme.colorScheme.onSurface
+                                )
+                            ) {
+                                Icon(
+                                    Icons.Default.FavoriteBorder,
+                                    contentDescription = "like"
+                                )
+                            }
+                        }
+
+                        else -> {
+                            LoadingIndicator()
+                        }
+
+
+                    }
+                    IconButton(onClick = { backStack.add(Screen.SettingsPageRoute) }) {
+                        Icon(
+                            imageVector = Icons.Outlined.Settings,
+                            contentDescription = "Settings"
+                        )
+                    }
+                }
+            },
+            colors = TopAppBarDefaults.topAppBarColors(
+
+                titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+            ), scrollBehavior = scrollBehavior
+        )
+    }) { innerPadding ->
     if (error != null) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Text(error.toString())
@@ -62,7 +126,7 @@ fun MovieDetailsPage(viewModel: MovieDetailsPageViewModel, backStack: SnapshotSt
     } else {
         if (isLoading) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
+                LoadingIndicator()
             }
         } else if (movie == null) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -76,14 +140,8 @@ fun MovieDetailsPage(viewModel: MovieDetailsPageViewModel, backStack: SnapshotSt
                 rememberAsyncImagePainter(imageLink)
             val state = painter.state.collectAsStateWithLifecycle()
             val scrollState = rememberScrollState()
-            val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
-            Scaffold(topBar = {
-                MyTopABCommon(
-                    backStack,
-                    scrollBehavior,
-                    "Movie Details"
-                )
-            }) { innerPadding ->
+
+
                 Column(
                     modifier = Modifier
                         .verticalScroll(scrollState)
@@ -92,9 +150,9 @@ fun MovieDetailsPage(viewModel: MovieDetailsPageViewModel, backStack: SnapshotSt
 
                     Box(
                         Modifier
-                            .fillMaxWidth()
+
                             .height(400.dp)
-                            .background(MaterialTheme.colorScheme.inverseSurface)
+
                     ) {
                         when (state.value) {
                             is AsyncImagePainter.State.Empty -> {
@@ -103,10 +161,10 @@ fun MovieDetailsPage(viewModel: MovieDetailsPageViewModel, backStack: SnapshotSt
 
                             is AsyncImagePainter.State.Loading -> {
                                 Box(
-                                    modifier = Modifier.fillMaxSize(),
+                                    modifier = Modifier.fillMaxSize().shimmer().background(MaterialTheme.colorScheme.tertiary),
                                     contentAlignment = Alignment.Center
                                 ) {
-                                    CircularProgressIndicator()
+
                                 }
                             }
 
@@ -118,8 +176,20 @@ fun MovieDetailsPage(viewModel: MovieDetailsPageViewModel, backStack: SnapshotSt
                                 )
                             }
 
-                            else -> {
-                                Text(state.value.toString())
+                            else -> { Column(
+                                modifier = Modifier.fillMaxSize(),
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Icon(
+                                    Icons.Default.Error,
+                                    modifier = Modifier.size(200.dp),
+                                    contentDescription = "placeholderr",
+                                    tint = MaterialTheme.colorScheme.onSecondaryContainer
+                                )
+                                Text("No Image Was Found!!", fontSize = 30.sp, textAlign = TextAlign.Center)
+
+                            }
                             }
                         }
                     }
@@ -146,43 +216,6 @@ fun MovieDetailsPage(viewModel: MovieDetailsPageViewModel, backStack: SnapshotSt
                                 .padding(20.dp), horizontalArrangement = Arrangement.SpaceBetween
                         ) {
 
-                            when (isFavourite) {
-                                true -> {
-                                    IconButton(
-                                        onClick = { viewModel.deleteFromFavourite() },
-                                        colors = IconButtonDefaults.iconButtonColors(
-                                            containerColor = MaterialTheme.colorScheme.errorContainer,
-                                            contentColor = MaterialTheme.colorScheme.onSurface
-                                        )
-                                    ) {
-                                        Icon(
-                                            Icons.Default.Favorite,
-                                            contentDescription = "Unlike"
-                                        )
-                                    }
-                                }
-
-                                false -> {
-                                    IconButton(
-                                        onClick = { viewModel.addToFavourite() },
-                                        colors = IconButtonDefaults.iconButtonColors(
-                                            containerColor = MaterialTheme.colorScheme.errorContainer,
-                                            contentColor = MaterialTheme.colorScheme.onSurface
-                                        )
-                                    ) {
-                                        Icon(
-                                            Icons.Default.FavoriteBorder,
-                                            contentDescription = "like"
-                                        )
-                                    }
-                                }
-
-                                else -> {
-                                    LoadingIndicator()
-                                }
-
-
-                            }
 
                             Button(
                                 onClick = {},

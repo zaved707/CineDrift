@@ -97,10 +97,10 @@ fun SmallMovieCard(backStack: SnapshotStateList<NavKey>,item : Any){
                     else -> {
                         val scrollState = rememberScrollState()
                         Box(
-                            modifier = Modifier.verticalScroll(scrollState),
+                            modifier = Modifier.verticalScroll(scrollState).fillMaxSize(),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text("No Image XD")
+                            Text("CINEDRIFT")
                         }
                     }
                 }
