@@ -8,17 +8,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.rememberTopAppBarState
@@ -34,9 +28,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavKey
-import com.zavedahmad.cineDrift.Screen
 import com.zavedahmad.cineDrift.ui.components.MovieCarousel
 import com.zavedahmad.cineDrift.ui.components.MyBottomBar
+import com.zavedahmad.cineDrift.ui.components.MyTopABCommon
 import com.zavedahmad.cineDrift.ui.components.ShimmerBlocksMain
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
@@ -49,7 +43,7 @@ fun MainPage(backStack: SnapshotStateList<NavKey>, viewModel: MainPageViewModel)
     val error by viewModel.error.collectAsStateWithLifecycle()
     val popularMovies = viewModel.popularMovies.collectAsStateWithLifecycle().value
     val topRatedMovies = viewModel.topRatedMoviess.collectAsStateWithLifecycle().value
-    val authToken by viewModel.authToken.collectAsStateWithLifecycle()
+
     PullToRefreshBox(isRefreshing = isLoading, onRefresh = { viewModel.setApiKeyAndFetchData() }) {
         Scaffold(
             modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -58,15 +52,9 @@ fun MainPage(backStack: SnapshotStateList<NavKey>, viewModel: MainPageViewModel)
                 MyBottomBar(backStack)
 
         }, topBar = {
+                MyTopABCommon(backStack, scrollBehavior,"CineDrift")
 
-                TopAppBar(
-                    title = { Text("Movies") },
-                    actions = { IconButton(onClick = {backStack.add(Screen.SettingsPageRoute)}){ Icon(imageVector = Icons.Outlined.Settings, contentDescription = "Settings") }},
-                    colors = TopAppBarDefaults.topAppBarColors(
 
-                        titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                    ), scrollBehavior = scrollBehavior
-                )
 
         }) { padding ->
 

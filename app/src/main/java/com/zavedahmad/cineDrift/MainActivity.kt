@@ -22,7 +22,7 @@ import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import androidx.navigation3.ui.rememberSceneSetupNavEntryDecorator
 import com.zavedahmad.cineDrift.ui.favouritesScreen.FaScViewModel
-//import com.zavedahmad.cineDrift.ui.favouritesScreen.FaScViewModel
+
 import com.zavedahmad.cineDrift.ui.favouritesScreen.FavouritesScreen
 import com.zavedahmad.cineDrift.ui.mainPage.MainPage
 import com.zavedahmad.cineDrift.ui.mainPage.MainPageViewModel
@@ -135,7 +135,7 @@ class RecipePickerActivity : ComponentActivity() {
                                                         factory.create(key)
                                                     }
                                                 )
-                                            MovieDetailsPage(viewModel)
+                                            MovieDetailsPage(viewModel,backStack)
                                         }
                                     }
 

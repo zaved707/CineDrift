@@ -15,10 +15,15 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
@@ -27,14 +32,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation3.runtime.NavKey
 import coil3.compose.AsyncImagePainter
 import coil3.compose.rememberAsyncImagePainter
 import com.zavedahmad.cineDrift.roomDatabase.FavouritesDao
+import com.zavedahmad.cineDrift.ui.components.MyTopABCommon
 
 //import com.zavedahmad.cineDrift.roomDatabase.FavouritesDao
 
 @Composable
-fun MovieDetailsPage (viewModel: MovieDetailsPageViewModel) {
+@OptIn(ExperimentalMaterial3Api::class)
+fun MovieDetailsPage (viewModel: MovieDetailsPageViewModel,backStack: SnapshotStateList<NavKey>) {
 
     val movie = viewModel.movie.collectAsStateWithLifecycle().value
     val error by viewModel.error.collectAsStateWithLifecycle()
@@ -58,7 +66,9 @@ fun MovieDetailsPage (viewModel: MovieDetailsPageViewModel) {
             rememberAsyncImagePainter(imageLink)
         val state = painter.state.collectAsStateWithLifecycle()
         val scrollState = rememberScrollState()
-        Column(modifier = Modifier.verticalScroll(scrollState)) {
+        val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
+        Scaffold(topBar = {MyTopABCommon(backStack, scrollBehavior,"Movie Details")}) { innerPadding->
+        Column(modifier = Modifier.verticalScroll(scrollState).padding(innerPadding)) {
 
             Box(
                 Modifier
@@ -128,5 +138,5 @@ fun MovieDetailsPage (viewModel: MovieDetailsPageViewModel) {
                 }
             }
         }}
-    }
+    }}
 }
