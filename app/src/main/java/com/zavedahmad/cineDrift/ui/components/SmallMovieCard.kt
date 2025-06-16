@@ -29,6 +29,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavKey
 import coil3.compose.AsyncImagePainter
 import coil3.compose.rememberAsyncImagePainter
+import com.valentinilk.shimmer.shimmer
 import com.zavedahmad.cineDrift.Screen.MovieDetailPageRoute
 import com.zavedahmad.cineDrift.movieDetailModel.MovieDetailModel
 import com.zavedahmad.cineDrift.popularMoviesModel.Result
@@ -71,7 +72,7 @@ fun SmallMovieCard(backStack: SnapshotStateList<NavKey>,item : Any){
                     .width(106.5.dp)
                     .height(200.dp)
                     .clip(RoundedCornerShape(20.dp))
-                    .background(MaterialTheme.colorScheme.inverseSurface)
+
 
             ) {
                 when (state.value) {
@@ -81,7 +82,7 @@ fun SmallMovieCard(backStack: SnapshotStateList<NavKey>,item : Any){
 
                     is AsyncImagePainter.State.Loading -> {
 
-                        CircularProgressIndicator()
+                        Box(modifier = Modifier.shimmer().fillMaxSize().background(MaterialTheme.colorScheme.tertiary))
 
                     }
 

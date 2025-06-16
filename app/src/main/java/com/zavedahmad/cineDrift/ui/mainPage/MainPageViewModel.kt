@@ -44,8 +44,8 @@ class MainPageViewModel @Inject constructor(val movieDetailApi: MovieDetailApi, 
 
     fun setApiKeyAndFetchData(){
         viewModelScope.launch(){
-        _authToken.value = preferencesDao.getPreference("ApiKey")?.value?:  "empty"
-            if (_authToken.value != "empty") {
+            _authToken.value = preferencesDao.getPreference("ApiKey")?.value?:  "empty"
+            if (_authToken.value != "empty" && _authToken.value != "") {
                 fetchData()
             } else {
                 _isLoading.value=false
@@ -65,7 +65,7 @@ class MainPageViewModel @Inject constructor(val movieDetailApi: MovieDetailApi, 
                     movieDetailApi.getPopularMovies(page = 1,
                         authHeader = "Bearer ${authToken.value}", listOf = "popular")
                 if (popularMoviesResponse.isSuccessful) {
-                     _popularMovies.value = popularMoviesResponse.body()
+                    _popularMovies.value = popularMoviesResponse.body()
                 }
                 val topRatedrMoviesResponse =
                     movieDetailApi.getPopularMovies(page = 1,

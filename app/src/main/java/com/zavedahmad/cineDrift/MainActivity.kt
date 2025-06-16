@@ -28,6 +28,7 @@ import com.zavedahmad.cineDrift.ui.mainPage.MainPage
 import com.zavedahmad.cineDrift.ui.mainPage.MainPageViewModel
 import com.zavedahmad.cineDrift.ui.movieDetailsPage.MovieDetailsPage
 import com.zavedahmad.cineDrift.ui.movieDetailsPage.MovieDetailsPageViewModel
+import com.zavedahmad.cineDrift.ui.otherPages.NoApiPage
 import com.zavedahmad.cineDrift.ui.searchScreen.SSViewModel
 import com.zavedahmad.cineDrift.ui.searchScreen.SearchScreen
 import com.zavedahmad.cineDrift.ui.setEdgeToEdgeConfig
@@ -38,6 +39,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.serialization.Serializable
 
 sealed class Screen : NavKey {
+    @Serializable
+    data object NoApiPageRoute: Screen()
+
     @Serializable
     data object MainPageRoute :Screen()
 
@@ -126,6 +130,11 @@ class RecipePickerActivity : ComponentActivity() {
                                         ) {
                                             FavouritesScreen(backStack,viewModelFavouritesPage)
                                         }}
+                                    }
+                                    is Screen.NoApiPageRoute->{
+                                        NavEntry(key=key){
+                                            NoApiPage(backStack)
+                                        }
                                     }
                                     is Screen.MovieDetailPageRoute -> {
                                         NavEntry(key = key) {

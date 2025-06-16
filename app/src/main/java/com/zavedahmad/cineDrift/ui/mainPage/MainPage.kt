@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
@@ -28,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavKey
+import com.zavedahmad.cineDrift.Screen
 import com.zavedahmad.cineDrift.ui.components.MovieCarousel
 import com.zavedahmad.cineDrift.ui.components.MyBottomBar
 import com.zavedahmad.cineDrift.ui.components.MyTopABCommon
@@ -45,83 +47,56 @@ fun MainPage(backStack: SnapshotStateList<NavKey>, viewModel: MainPageViewModel)
     val topRatedMovies = viewModel.topRatedMoviess.collectAsStateWithLifecycle().value
 
 
-        Scaffold(
-            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-            bottomBar = {
+    Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        bottomBar = { MyBottomBar(backStack) },
+        topBar = { MyTopABCommon(backStack, scrollBehavior, "CineDrift") }
+    ) { innerPadding ->
+        PullToRefreshBox(
+            modifier = Modifier.padding(innerPadding),
+            isRefreshing = isLoading,
+            onRefresh = { viewModel.setApiKeyAndFetchData() }
+        ) {
+            Column(
+                modifier = Modifier
+                    .verticalScroll(scrollState)
+                    .fillMaxSize()
+            ) {
 
-                MyBottomBar(backStack)
 
-        }, topBar = {
-                MyTopABCommon(backStack, scrollBehavior,"CineDrift")
-
-
-
-        }) { innerpadding ->
-            PullToRefreshBox(modifier = Modifier.padding(innerpadding), isRefreshing = isLoading, onRefresh = { viewModel.setApiKeyAndFetchData() }) {
-
-            Column(modifier = Modifier
-                .verticalScroll(scrollState)
-                .padding()) {
-
-                Column( modifier = Modifier.padding(horizontal = 20.dp)) {
-
-                    Text(
-                        "Popular Movies",
-
-                        style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 40.sp)
-                    )
-                    HorizontalDivider()
-                }
-                Spacer(modifier = Modifier.height(20.dp))
-
-                if (error != null) {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                if (error == "NoApi") {
+                    Box(Modifier.fillMaxSize(), Alignment.Center) {
+                        Button(onClick = { backStack.add(Screen.SettingsPageRoute) }) {
+                            Text("go to settings to change it")
+                        }
+                    }
+                } else if (error != null) {
+                    Box(Modifier.fillMaxSize(), Alignment.Center) {
                         Text(error.toString())
                     }
                 } else {
-                    if (isLoading) {
-                        ShimmerBlocksMain()
-                    } else if (popularMovies == null) {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text("Empty")
-                        }
-                    } else {
-
-                        MovieCarousel(backStack, popularMovies)
+                    Column(Modifier.padding(horizontal = 20.dp)) {
+                        Text(
+                            "Popular Movies",
+                            style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 40.sp)
+                        )
+                        HorizontalDivider()
+                        if (isLoading) ShimmerBlocksMain()
+                        else if (popularMovies == null) Box(Modifier.fillMaxSize(), Alignment.Center) { Text("Empty") }
+                        else MovieCarousel(backStack, popularMovies)
+                    }
+                    Spacer(Modifier.height(20.dp))
+                    Column(Modifier.padding(horizontal = 20.dp)) {
+                        Text(
+                            "Top-Rated Movies",
+                            style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 40.sp)
+                        )
+                        HorizontalDivider()
+                        if (isLoading) ShimmerBlocksMain()
+                        else if (topRatedMovies == null) Box(Modifier.fillMaxSize(), Alignment.Center) { Text("Empty") }
+                        else MovieCarousel(backStack, topRatedMovies)
                     }
                 }
-                Column( modifier = Modifier.padding(horizontal = 20.dp)) {
-                    Text(
-                        "Top-Rated Movies",
-                        style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 40.sp)
-                    )
-                    HorizontalDivider()
-                }
-                Spacer(modifier = Modifier.height(20.dp))
-
-                if (error != null) {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text(error.toString())
-                    }
-                } else {
-                    if (isLoading) {
-                        ShimmerBlocksMain()
-                    } else if (topRatedMovies == null) {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text("Empty")
-                        }
-                    } else {
-                        MovieCarousel(backStack, topRatedMovies)
-                    }
-                }
-
-
             }
         }
     }
