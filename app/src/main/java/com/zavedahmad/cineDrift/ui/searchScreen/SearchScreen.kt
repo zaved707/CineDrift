@@ -1,5 +1,7 @@
 package com.zavedahmad.cineDrift.ui.searchScreen
 
+import android.app.appsearch.SearchResults
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,19 +12,30 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.ExpandedFullScreenSearchBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SearchBar
+import androidx.compose.material3.SearchBarDefaults
+import androidx.compose.material3.SearchBarValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,6 +47,7 @@ import androidx.navigation3.runtime.NavKey
 import com.zavedahmad.cineDrift.ui.components.MyBottomBar
 import com.zavedahmad.cineDrift.ui.components.MyTopABCommon
 import com.zavedahmad.cineDrift.ui.components.SmallMovieCard
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -53,29 +67,68 @@ fun SearchScreen(backStack :  SnapshotStateList<NavKey>, viewModel: SSViewModel)
 
             MyTopABCommon(backStack,scrollBehavior,"Search")
     }){  innerPadding ->
-    Column (modifier = Modifier.padding(innerPadding)){
-        OutlinedTextField(
-            leadingIcon = {
-                Icon(
-                    Icons.Default.Search, contentDescription = "search for movie you want "
-                )
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 30.dp, start = 30.dp, end = 30.dp, bottom = 10.dp)
-               ,
-            value = query,
-            onValueChange = { viewModel.changeSearchQuery(it) },
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-            keyboardActions = KeyboardActions(onSearch = {
-                viewModel.setApiKeyAndFetchData()
-            }),
-            placeholder = {
-                Row {
 
-                    Text("Search")
+    Column (modifier = Modifier.padding(innerPadding), horizontalAlignment = Alignment.CenterHorizontally){
+        val searchBarState = rememberSearchBarState()
+
+        val textFieldState = rememberTextFieldState(initialText = "text")
+
+        val scope = rememberCoroutineScope()
+        LaunchedEffect(textFieldState) {
+            viewModel.changeSearchQuery(textFieldState.text.toString())
+        }
+        val inputField = @Composable{
+            SearchBarDefaults.InputField(
+                searchBarState = searchBarState,
+                textFieldState = textFieldState,
+
+                enabled = true,
+                onSearch = {viewModel.setApiKeyAndFetchData()
+                           scope.launch { searchBarState.animateToCollapsed() }},
+                placeholder ={ Text("Search..")},
+                leadingIcon = {
+                    if (searchBarState.currentValue == SearchBarValue.Expanded) {
+                        IconButton(
+                            onClick = { scope.launch { searchBarState.animateToCollapsed() } }
+                        ) {
+                            Icon(Icons.AutoMirrored.Default.ArrowBack, contentDescription = "Back")
+                        }
+                    } else {
+                        Icon(Icons.Default.Search, contentDescription = null)
+                    }
                 }
-            })
+            )
+        }
+        SearchBar(state =  searchBarState,
+            inputField = inputField)
+        ExpandedFullScreenSearchBar(
+            state = searchBarState,
+            inputField = inputField,
+        ) {
+
+        }
+
+//        OutlinedTextField(
+//            leadingIcon = {
+//                Icon(
+//                    Icons.Default.Search, contentDescription = "search for movie you want "
+//                )
+//            },
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(top = 30.dp, start = 30.dp, end = 30.dp, bottom = 10.dp),
+//            value = query,
+//            onValueChange = { viewModel.changeSearchQuery(it) },
+//            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+//            keyboardActions = KeyboardActions(onSearch = {
+//                viewModel.setApiKeyAndFetchData()
+//            }),
+//            placeholder = {
+//                Row {
+//
+//                    Text("Search")
+//                }
+//            })
 
         if (error != null) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

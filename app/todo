@@ -1,7 +1,8 @@
-todo make favouritesButton in Details page responsive to if the user has added the movie to favourite
-todo unify the topApp Bars
-todo add topApp bar to MovieDetailsPage
+todo search Screen Search Bar improve aesthetics
 todo hide loading indicator behind the top bar
 todo implement dark Light theme in Settings
 todo add more items to home screen
 todo add a better empty placeHolder for Search Screen
+todo://COMPLETED make favouritesButton in Details page responsive to if the user has added the movie to favourite
+todo //COMPLETED unify the topApp Bars
+todo //COMPLETED add topApp bar to MovieDetailsPage

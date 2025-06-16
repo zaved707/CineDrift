@@ -145,44 +145,42 @@ fun MovieDetailsPage(viewModel: MovieDetailsPageViewModel, backStack: SnapshotSt
                                 .fillMaxWidth()
                                 .padding(20.dp), horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            if (isFavourite == null) {
 
-                            } else {
-                                when (isFavourite) {
-                                    true -> {
-                                        IconButton(
-                                            onClick = { viewModel.deleteFromFavourite() },
-                                            colors = IconButtonDefaults.iconButtonColors(
-                                                containerColor = MaterialTheme.colorScheme.errorContainer,
-                                                contentColor = MaterialTheme.colorScheme.onSurface
-                                            )
-                                        ) {
-                                            Icon(
-                                                Icons.Default.Favorite,
-                                                contentDescription = "Unlike"
-                                            )
-                                        }
-                                    }
-
-                                    false -> {
-                                        IconButton(
-                                            onClick = { viewModel.addToFavourite() },
-                                            colors = IconButtonDefaults.iconButtonColors(
-                                                containerColor = MaterialTheme.colorScheme.errorContainer,
-                                                contentColor = MaterialTheme.colorScheme.onSurface
-                                            )
-                                        ) {
-                                            Icon(
-                                                Icons.Default.FavoriteBorder,
-                                                contentDescription = "like"
-                                            )
-                                        }
-                                    }
-
-                                    else -> {
-                                        LoadingIndicator()
+                            when (isFavourite) {
+                                true -> {
+                                    IconButton(
+                                        onClick = { viewModel.deleteFromFavourite() },
+                                        colors = IconButtonDefaults.iconButtonColors(
+                                            containerColor = MaterialTheme.colorScheme.errorContainer,
+                                            contentColor = MaterialTheme.colorScheme.onSurface
+                                        )
+                                    ) {
+                                        Icon(
+                                            Icons.Default.Favorite,
+                                            contentDescription = "Unlike"
+                                        )
                                     }
                                 }
+
+                                false -> {
+                                    IconButton(
+                                        onClick = { viewModel.addToFavourite() },
+                                        colors = IconButtonDefaults.iconButtonColors(
+                                            containerColor = MaterialTheme.colorScheme.errorContainer,
+                                            contentColor = MaterialTheme.colorScheme.onSurface
+                                        )
+                                    ) {
+                                        Icon(
+                                            Icons.Default.FavoriteBorder,
+                                            contentDescription = "like"
+                                        )
+                                    }
+                                }
+
+                                else -> {
+                                    LoadingIndicator()
+                                }
+
 
                             }
 
