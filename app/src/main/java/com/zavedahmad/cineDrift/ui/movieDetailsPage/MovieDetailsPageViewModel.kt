@@ -42,13 +42,23 @@ class MovieDetailsPageViewModel @AssistedInject constructor(
     val error = _error.asStateFlow()
     private val  _authToken = MutableStateFlow<String>("")
     val authToken = _authToken.asStateFlow()
+    private val _isFavourite = MutableStateFlow<Boolean?>(null)
+    val isFavourite = _isFavourite.asStateFlow()
     init {
         println("viewModel Created")
         setApiKeyAndFetchData()
+        checkFavourite()
     }
 
     override fun onCleared() {
         println("details Page ViewModel Deleted")
+    }
+    fun checkFavourite(){
+        viewModelScope.launch(Dispatchers.IO) {
+            _isFavourite.value = favouritesDao.checkMovieInFavourites(navKey.id)
+
+        }
+
     }
     fun setApiKeyAndFetchData(){
         viewModelScope.launch(){
@@ -65,7 +75,15 @@ class MovieDetailsPageViewModel @AssistedInject constructor(
     fun addToFavourite(){
 
         _movie.value?.let {item->
-            viewModelScope.launch(Dispatchers.IO) { favouritesDao.addMovie(FavouritesEntity(navKey.id, item)) }
+            viewModelScope.launch(Dispatchers.IO) { favouritesDao.addMovie(FavouritesEntity(navKey.id, item))
+                checkFavourite()
+            }
+        }
+
+    }
+    fun deleteFromFavourite(){
+        viewModelScope.launch (Dispatchers.IO){favouritesDao.deleteFromFavourites(navKey.id)
+            checkFavourite()
         }
 
     }

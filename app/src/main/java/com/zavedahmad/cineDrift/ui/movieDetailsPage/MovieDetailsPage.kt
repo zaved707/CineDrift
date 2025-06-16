@@ -12,10 +12,18 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -35,108 +43,160 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavKey
 import coil3.compose.AsyncImagePainter
 import coil3.compose.rememberAsyncImagePainter
-import com.zavedahmad.cineDrift.roomDatabase.FavouritesDao
 import com.zavedahmad.cineDrift.ui.components.MyTopABCommon
 
 //import com.zavedahmad.cineDrift.roomDatabase.FavouritesDao
 
 @Composable
-@OptIn(ExperimentalMaterial3Api::class)
-fun MovieDetailsPage (viewModel: MovieDetailsPageViewModel,backStack: SnapshotStateList<NavKey>) {
+@OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
+fun MovieDetailsPage(viewModel: MovieDetailsPageViewModel, backStack: SnapshotStateList<NavKey>) {
 
     val movie = viewModel.movie.collectAsStateWithLifecycle().value
     val error by viewModel.error.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
-    if (error !=null){
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
-            Text(error.toString())}
-    }else{
-    if (isLoading){
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
-        CircularProgressIndicator()}
-    }
-    else if ( movie == null) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
-            CircularProgressIndicator()}
+    val isFavourite by viewModel.isFavourite.collectAsStateWithLifecycle()
+    if (error != null) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Text(error.toString())
+        }
     } else {
-        val imageLink = "https://image.tmdb.org/t/p/original${movie.poster_path}"
-        val title = movie.title
-        val movieDescription =movie.overview
-        val painter =
-            rememberAsyncImagePainter(imageLink)
-        val state = painter.state.collectAsStateWithLifecycle()
-        val scrollState = rememberScrollState()
-        val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
-        Scaffold(topBar = {MyTopABCommon(backStack, scrollBehavior,"Movie Details")}) { innerPadding->
-        Column(modifier = Modifier.verticalScroll(scrollState).padding(innerPadding)) {
-
-            Box(
-                Modifier
-                    .fillMaxWidth()
-                    .height(400.dp)
-                    .background(MaterialTheme.colorScheme.inverseSurface)
-            ) {
-                when (state.value) {
-                    is AsyncImagePainter.State.Empty -> {
-                        Text("Empty")
-                    }
-
-                    is AsyncImagePainter.State.Loading -> {
-                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
-                            CircularProgressIndicator()}
-                    }
-
-                    is AsyncImagePainter.State.Success -> {
-                        Image(
-                            modifier = Modifier.fillMaxSize(),
-                            painter = painter,
-                            contentDescription = "duck"
-                        )
-                    }
-
-                    else -> {
-                        Text(state.value.toString())
-                    }
-                }
+        if (isLoading) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
             }
-            Column(Modifier.fillMaxSize()) {
-                Text(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(20.dp),
-                    text = title,
-                    fontSize = 40.sp,
-                    style = TextStyle(lineHeight = 40.sp),
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Left
+        } else if (movie == null) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
+        } else {
+            val imageLink = "https://image.tmdb.org/t/p/original${movie.poster_path}"
+            val title = movie.title
+            val movieDescription = movie.overview
+            val painter =
+                rememberAsyncImagePainter(imageLink)
+            val state = painter.state.collectAsStateWithLifecycle()
+            val scrollState = rememberScrollState()
+            val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
+            Scaffold(topBar = {
+                MyTopABCommon(
+                    backStack,
+                    scrollBehavior,
+                    "Movie Details"
                 )
-                Text(
+            }) { innerPadding ->
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(20.dp), text = movieDescription
-
-                )
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(20.dp), horizontalArrangement = Arrangement.SpaceBetween
+                        .verticalScroll(scrollState)
+                        .padding(innerPadding)
                 ) {
-                    Button(
-                        onClick = {viewModel.addToFavourite()},
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.errorContainer,
-                            contentColor = MaterialTheme.colorScheme.onSurface
+
+                    Box(
+                        Modifier
+                            .fillMaxWidth()
+                            .height(400.dp)
+                            .background(MaterialTheme.colorScheme.inverseSurface)
+                    ) {
+                        when (state.value) {
+                            is AsyncImagePainter.State.Empty -> {
+                                Text("Empty")
+                            }
+
+                            is AsyncImagePainter.State.Loading -> {
+                                Box(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    CircularProgressIndicator()
+                                }
+                            }
+
+                            is AsyncImagePainter.State.Success -> {
+                                Image(
+                                    modifier = Modifier.fillMaxSize(),
+                                    painter = painter,
+                                    contentDescription = "duck"
+                                )
+                            }
+
+                            else -> {
+                                Text(state.value.toString())
+                            }
+                        }
+                    }
+                    Column(Modifier.fillMaxSize()) {
+                        Text(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(20.dp),
+                            text = title,
+                            fontSize = 40.sp,
+                            style = TextStyle(lineHeight = 40.sp),
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Left
                         )
-                    ) { Text("Add to favourites") }
-                    Button(
-                        onClick = {},
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceBright,
-                            contentColor = MaterialTheme.colorScheme.onSurface
+                        Text(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(20.dp), text = movieDescription
+
                         )
-                    ) { Text("Share") }
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(20.dp), horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            if (isFavourite == null) {
+
+                            } else {
+                                when (isFavourite) {
+                                    true -> {
+                                        IconButton(
+                                            onClick = { viewModel.deleteFromFavourite() },
+                                            colors = IconButtonDefaults.iconButtonColors(
+                                                containerColor = MaterialTheme.colorScheme.errorContainer,
+                                                contentColor = MaterialTheme.colorScheme.onSurface
+                                            )
+                                        ) {
+                                            Icon(
+                                                Icons.Default.Favorite,
+                                                contentDescription = "Unlike"
+                                            )
+                                        }
+                                    }
+
+                                    false -> {
+                                        IconButton(
+                                            onClick = { viewModel.addToFavourite() },
+                                            colors = IconButtonDefaults.iconButtonColors(
+                                                containerColor = MaterialTheme.colorScheme.errorContainer,
+                                                contentColor = MaterialTheme.colorScheme.onSurface
+                                            )
+                                        ) {
+                                            Icon(
+                                                Icons.Default.FavoriteBorder,
+                                                contentDescription = "like"
+                                            )
+                                        }
+                                    }
+
+                                    else -> {
+                                        LoadingIndicator()
+                                    }
+                                }
+
+                            }
+
+                            Button(
+                                onClick = {},
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.surfaceBright,
+                                    contentColor = MaterialTheme.colorScheme.onSurface
+                                )
+                            ) { Text("Share") }
+                        }
+                    }
                 }
             }
-        }}
-    }}
+        }
+    }
 }

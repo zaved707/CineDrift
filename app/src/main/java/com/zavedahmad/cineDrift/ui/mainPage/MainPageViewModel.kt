@@ -3,6 +3,7 @@ package com.zavedahmad.cineDrift.ui.mainPage
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation3.runtime.NavKey
 import com.zavedahmad.cineDrift.popularMoviesModel.MoviesResponse
 import com.zavedahmad.cineDrift.retrofitApi.MovieDetailApi
 import com.zavedahmad.cineDrift.roomDatabase.PreferencesDao
@@ -30,7 +31,6 @@ class MainPageViewModel @Inject constructor(val movieDetailApi: MovieDetailApi, 
     private val _popularMovies = MutableStateFlow<MoviesResponse?>(null)
     val popularMovies = _popularMovies.asStateFlow()
 
-
     private val _isLoading = MutableStateFlow<Boolean>(true)
     val isLoading = _isLoading.asStateFlow()
     private val _error = MutableStateFlow<String?>(null)
@@ -41,6 +41,7 @@ class MainPageViewModel @Inject constructor(val movieDetailApi: MovieDetailApi, 
         setApiKeyAndFetchData()
 
     }
+
     fun setApiKeyAndFetchData(){
         viewModelScope.launch(){
         _authToken.value = preferencesDao.getPreference("ApiKey")?.value?:  "empty"
