@@ -69,7 +69,7 @@ fun MainPage(backStack: SnapshotStateList<NavKey>, viewModel: MainPageViewModel)
                 .padding(innerPadding)
                 .fillMaxSize(),
             isRefreshing = isLoading,
-            onRefresh = { viewModel.setApiKeyAndFetchData() }
+            onRefresh = { viewModel.reloadFromScreen() }
         ) {
 
 

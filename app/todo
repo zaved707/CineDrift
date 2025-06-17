@@ -1,12 +1,14 @@
 todo implement dark Light theme in Settings
 todo add more items to home screen
 todo on click of search icon in search screen to lead to search field and open keyboard
-todo check api key validity
-todo make bottom bar icons similar
-todo add a placeholder for when user has no API
-todo// ComPLETED add a better empty placeHolder for Search Screen
-todo://COMPLETED make favouritesButton in Details page responsive to if the user has added the movie to favourite
-todo //COMPLETED unify the topApp Bars
-todo //COMPLETED add topApp bar to MovieDetailsPage
-todo//COMPLETED search Screen Search Bar improve aesthetics
-todo //COMPLETED hide loading indicator behind the top bar
+todo make error page a seperate page
+todo bug you can remove something from favourites but now put somethingt to favourites
+DONE check api key validity
+DONE  make bottom bar icons similar
+DONE add a placeholder for when user has no API
+//DONE: add a better empty placeHolder for Search Screen
+//COMPLETED make favouritesButton in Details page responsive to if the user has added the movie to favourite
+//COMPLETED unify the topApp Bars
+//COMPLETED add topApp bar to MovieDetailsPage
+//COMPLETED search Screen Search Bar improve aesthetics
+//COMPLETED hide loading indicator behind the top bar

@@ -1,6 +1,7 @@
 package com.zavedahmad.cineDrift.retrofitApi
 
 import com.zavedahmad.cineDrift.AuthorizationModel
+import com.zavedahmad.cineDrift.SecondAuthModel
 import com.zavedahmad.cineDrift.movieDetailModel.MovieDetailModel
 import com.zavedahmad.cineDrift.popularMoviesModel.MoviesResponse
 import retrofit2.Response

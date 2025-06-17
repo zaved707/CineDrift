@@ -12,12 +12,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.pager.VerticalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.KeyOff
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Button
@@ -34,6 +37,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -54,6 +58,8 @@ import com.zavedahmad.cineDrift.Screen
 
 //import com.zavedahmad.cineDrift.roomDatabase.FavouritesDao
 
+private val modifier = Modifier
+
 @Composable
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 fun MovieDetailsPage(viewModel: MovieDetailsPageViewModel, backStack: SnapshotStateList<NavKey>) {
@@ -62,6 +68,9 @@ fun MovieDetailsPage(viewModel: MovieDetailsPageViewModel, backStack: SnapshotSt
     val error by viewModel.error.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val isFavourite by viewModel.isFavourite.collectAsStateWithLifecycle()
+    val pagerState = rememberPagerState(pageCount = {
+        1
+    })
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
     Scaffold(topBar = {
         TopAppBar(
@@ -119,20 +128,82 @@ fun MovieDetailsPage(viewModel: MovieDetailsPageViewModel, backStack: SnapshotSt
             ), scrollBehavior = scrollBehavior
         )
     }) { innerPadding ->
-    if (error != null) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text(error.toString())
-        }
-    } else {
-        if (isLoading) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                LoadingIndicator()
+        if (error == "NoApi") {
+            PullToRefreshBox(
+                modifier = Modifier
+                    .padding()
+                    .fillMaxSize(),
+                isRefreshing = isLoading,
+                onRefresh = { viewModel.reloadFromScreen() }
+            ) {
+                VerticalPager(state = pagerState) {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Icon(
+                            Icons.Default.KeyOff,
+                            modifier = Modifier.size(200.dp),
+                            contentDescription = "placeholderr",
+                            tint = MaterialTheme.colorScheme.onSecondaryContainer
+                        )
+                        Text("Either you Api is Not set Or is Invalid")
+                        Button(onClick = { backStack.add(Screen.SettingsPageRoute) }) {
+                            Text("Go to settings to change it")
+                        }
+                    }
+                }
             }
-        } else if (movie == null) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
+        } else if (error != null) {
+            PullToRefreshBox(
+                modifier = Modifier
+                    .padding()
+                    .fillMaxSize(),
+                isRefreshing = isLoading,
+                onRefresh = { viewModel.reloadFromScreen() }
+            ) {
+                VerticalPager(state = pagerState) {
+                    Column(
+
+
+                        modifier = Modifier.fillMaxSize(),
+
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+
+                        Text(error.toString())
+
+                    }
+                }
             }
+
+
         } else {
+            if (isLoading) {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    LoadingIndicator()
+                }
+            } else if (movie == null) {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Icon(
+                        Icons.Default.Search,
+                        modifier = Modifier.size(200.dp),
+                        contentDescription = "placeholderr",
+                        tint = MaterialTheme.colorScheme.onSecondaryContainer
+                    )
+
+                }
+            }  else {
             val imageLink = "https://image.tmdb.org/t/p/original${movie.poster_path}"
             val title = movie.title
             val movieDescription = movie.overview
@@ -143,13 +214,13 @@ fun MovieDetailsPage(viewModel: MovieDetailsPageViewModel, backStack: SnapshotSt
 
 
             Column(
-                modifier = Modifier
+                modifier = modifier
                     .verticalScroll(scrollState)
                     .padding(innerPadding)
             ) {
 
                     Box(
-                        Modifier
+                        modifier
 
                             .height(400.dp)
 
@@ -161,7 +232,7 @@ fun MovieDetailsPage(viewModel: MovieDetailsPageViewModel, backStack: SnapshotSt
 
                             is AsyncImagePainter.State.Loading -> {
                                 Box(
-                                    modifier = Modifier
+                                    modifier = modifier
                                         .fillMaxSize()
                                         .shimmer()
                                         .background(MaterialTheme.colorScheme.tertiary),
@@ -173,20 +244,20 @@ fun MovieDetailsPage(viewModel: MovieDetailsPageViewModel, backStack: SnapshotSt
 
                             is AsyncImagePainter.State.Success -> {
                                 Image(
-                                    modifier = Modifier.fillMaxSize(),
+                                    modifier = modifier.fillMaxSize(),
                                     painter = painter,
                                     contentDescription = "duck"
                                 )
                             }
 
                             else -> { Column(
-                                modifier = Modifier.fillMaxSize(),
+                                modifier = modifier.fillMaxSize(),
                                 verticalArrangement = Arrangement.Center,
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 Icon(
                                     Icons.Default.Error,
-                                    modifier = Modifier.size(200.dp),
+                                    modifier = modifier.size(200.dp),
                                     contentDescription = "placeholderr",
                                     tint = MaterialTheme.colorScheme.onSecondaryContainer
                                 )
@@ -196,9 +267,9 @@ fun MovieDetailsPage(viewModel: MovieDetailsPageViewModel, backStack: SnapshotSt
                             }
                         }
                     }
-                    Column(Modifier.fillMaxSize()) {
+                    Column(modifier.fillMaxSize()) {
                         Text(
-                            modifier = Modifier
+                            modifier = modifier
                                 .fillMaxWidth()
                                 .padding(20.dp),
                             text = title,
@@ -208,13 +279,13 @@ fun MovieDetailsPage(viewModel: MovieDetailsPageViewModel, backStack: SnapshotSt
                             textAlign = TextAlign.Left
                         )
                         Text(
-                            modifier = Modifier
+                            modifier = modifier
                                 .fillMaxWidth()
                                 .padding(20.dp), text = movieDescription
 
                         )
                         Row(
-                            modifier = Modifier
+                            modifier = modifier
                                 .fillMaxWidth()
                                 .padding(20.dp), horizontalArrangement = Arrangement.SpaceBetween
                         ) {

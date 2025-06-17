@@ -37,42 +37,69 @@ class MainPageViewModel @Inject constructor(
     val isLoading = _isLoading.asStateFlow()
     private val _error = MutableStateFlow<String?>(null)
     val error = _error.asStateFlow()
+    private val _tries = MutableStateFlow(0)
 
 
-    private val _isAuthenticated = MutableStateFlow<AuthorizationModel?>(null)
-    val isAuthenticated = _isAuthenticated.asStateFlow()
+   private val _isAuthenticated= MutableStateFlow<AuthorizationModel?>(AuthorizationModel(true))
+
+
+    suspend fun checkApiAuth() {
+        try {
+
+
+            _isLoading.value = true
+            _error.value = null
+            _isAuthenticated.value = null
+
+
+            val authenticatedResponse =
+                movieDetailApi.verifyKey(authHeader = "Bearer ${_authToken.value}")
+            println(
+                "inside checkAuth authenticatedResponse: $authenticatedResponse " + "\n body ${authenticatedResponse.body()}, " + "\n authenticatedResponse.isSuccessful : ${authenticatedResponse.isSuccessful}"
+            )
+            if (authenticatedResponse.isSuccessful) {
+                _isAuthenticated.value = authenticatedResponse.body()
+
+            } else {
+                println("came Inside Unsuccessfull")
+                _error.value = "NoApi"
+            }
+
+        } catch (e: Exception) {
+            _error.value = "println Cannot authorize Api"
+            _isAuthenticated.value = AuthorizationModel(true)
+
+
+        } finally {
+
+        }
+    }
 
     init {
         setApiKeyAndFetchData()
 
     }
-
+    fun reloadFromScreen() {
+        _isAuthenticated.value = AuthorizationModel(true)
+        _tries.value = 0
+        setApiKeyAndFetchData()
+    }
     fun setApiKeyAndFetchData() {
-        viewModelScope.launch() {
+
+        viewModelScope.launch(Dispatchers.IO) {
+
             _authToken.value = preferencesDao.getPreference("ApiKey")?.value ?: "empty"
-            try {
-                _isLoading.value = true
-                _error.value = null
-                _isAuthenticated.value = null
-                println("authentication set to null")
-                val authenticatedResponse =
-                    movieDetailApi.verifyKey(authHeader = "Bearer ${_authToken.value}")
-                if (authenticatedResponse.isSuccessful) {
-                    _isAuthenticated.value = authenticatedResponse.body()
-                }
-            } catch (e: Exception) {
-                _error.value = "NoApi"
-                println("Error: ${e.message}")
 
+            if (_isAuthenticated.value?.success ?: false) {
 
-            }
-            if (_isAuthenticated.value?.success?: false) {
                 fetchData()
             } else {
+
                 _isLoading.value = false
                 _error.value = "NoApi"
             }
         }
+
     }
 
     fun fetchData() {
@@ -86,26 +113,51 @@ class MainPageViewModel @Inject constructor(
                         page = 1,
                         authHeader = "Bearer ${authToken.value}", listOf = "popular"
                     )
-                if (popularMoviesResponse.isSuccessful) {
-                    _popularMovies.value = popularMoviesResponse.body()
-                }
+
                 val topRatedrMoviesResponse =
                     movieDetailApi.getPopularMovies(
                         page = 1,
                         authHeader = "Bearer ${authToken.value}", listOf = "top_rated"
                     )
-                if (topRatedrMoviesResponse.isSuccessful) {
+                if (topRatedrMoviesResponse.isSuccessful && popularMoviesResponse.isSuccessful) {
                     _topRatedMovies.value = topRatedrMoviesResponse.body()
+                    _popularMovies.value = popularMoviesResponse.body()
+                    _isLoading.value = false
+                } else {
+                    if (_tries.value <= 1) {
+                        _tries.value += 1
+
+                        checkApiAuth()
+                        setApiKeyAndFetchData()
+
+
+                    } else {
+                        _tries.value = 0
+                        _error.value =
+                            "Failed to fetch movie. Please try again. tries: ${_tries.value}"
+                        _isLoading.value = false
+                    }
+
                 }
 
             } catch (e: Exception) {
-                _error.value = "Failed to fetch movie. Please try again. ${e.message}"
-                println("Error: ${e.message}")
-            } finally {
-                _isLoading.value = false
+                if (_tries.value <= 1) {
+                    _tries.value += 1
+
+                    checkApiAuth()
+                    setApiKeyAndFetchData()
+
+
+                } else {
+
+                    _error.value =
+                        "Failed to fetch movie. Please try again. ${e.message} tries: ${_tries.value}"
+                    _tries.value = 0
+                    _isLoading.value = false
+                }
+
             }
 
         }
-        println("mainViewModelCreated")
     }
 }

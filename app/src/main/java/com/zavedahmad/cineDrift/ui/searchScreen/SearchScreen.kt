@@ -2,7 +2,6 @@ package com.zavedahmad.cineDrift.ui.searchScreen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,6 +13,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.VerticalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
@@ -21,7 +22,9 @@ import androidx.compose.foundation.text.input.KeyboardActionHandler
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyOff
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
@@ -30,6 +33,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -46,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavKey
+import com.zavedahmad.cineDrift.Screen
 import com.zavedahmad.cineDrift.ui.components.MyBottomBar
 import com.zavedahmad.cineDrift.ui.components.MyTopABCommon
 import com.zavedahmad.cineDrift.ui.components.SmallMovieCard
@@ -59,6 +64,9 @@ fun SearchScreen(backStack: SnapshotStateList<NavKey>, viewModel: SSViewModel) {
     val error by viewModel.error.collectAsStateWithLifecycle()
     val query = viewModel.searchQuery.collectAsStateWithLifecycle().value
     val movies = viewModel.movies.collectAsStateWithLifecycle().value
+    val pagerState = rememberPagerState(pageCount = {
+        1
+    })
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -92,7 +100,7 @@ fun SearchScreen(backStack: SnapshotStateList<NavKey>, viewModel: SSViewModel) {
                 val basicTextFiledState = rememberTextFieldState(initialText = query)
                 LaunchedEffect(basicTextFiledState.text) {
                     viewModel.changeSearchQuery(basicTextFiledState.text.toString())
-                    println("text changed new Text is ${basicTextFiledState.text}")
+
                 }
 
                 Icon(
@@ -110,17 +118,65 @@ fun SearchScreen(backStack: SnapshotStateList<NavKey>, viewModel: SSViewModel) {
                     state = basicTextFiledState,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                     lineLimits = TextFieldLineLimits.SingleLine,
-                    onKeyboardAction = KeyboardActionHandler(function = { viewModel.setApiKeyAndFetchData() })
+                    onKeyboardAction = KeyboardActionHandler(function = { viewModel.reloadFromScreen() })
                 )
             }
 
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            if (error != null) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(error.toString())
+            if (error == "NoApi") {
+                PullToRefreshBox(
+                    modifier = Modifier
+                        .padding()
+                        .fillMaxSize(),
+                    isRefreshing = isLoading,
+                    onRefresh = { viewModel.reloadFromScreen() }
+                ) {
+                    VerticalPager(state = pagerState) {
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(
+                                Icons.Default.KeyOff,
+                                modifier = Modifier.size(200.dp),
+                                contentDescription = "placeholderr",
+                                tint = MaterialTheme.colorScheme.onSecondaryContainer
+                            )
+                            Text("Either you Api is Not set Or is Invalid")
+                            Button(onClick = { backStack.add(Screen.SettingsPageRoute) }) {
+                                Text("Go to settings to change it")
+                            }
+                        }
+                    }
                 }
+            } else if (error != null) {
+                PullToRefreshBox(
+                    modifier = Modifier
+                        .padding()
+                        .fillMaxSize(),
+                    isRefreshing = isLoading,
+                    onRefresh = { viewModel.reloadFromScreen() }
+                ) {
+                    VerticalPager(state = pagerState) {
+                        Column(
+
+
+                            modifier = Modifier.fillMaxSize(),
+
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+
+                            Text(error.toString())
+
+                        }
+                    }
+                }
+
+
             } else {
                 if (isLoading) {
                     Column(
