@@ -32,6 +32,9 @@ class MainPageViewModel @Inject constructor(
     val topRatedMovies = _topRatedMovies.asStateFlow()
     private val _popularMovies = MutableStateFlow<MoviesResponse?>(null)
     val popularMovies = _popularMovies.asStateFlow()
+    private val _upcomingMovies = MutableStateFlow<MoviesResponse?>(null)
+    val upcomingMovies = _upcomingMovies.asStateFlow()
+
 
     private val _isLoading = MutableStateFlow<Boolean>(true)
     val isLoading = _isLoading.asStateFlow()
@@ -119,9 +122,15 @@ class MainPageViewModel @Inject constructor(
                         page = 1,
                         authHeader = "Bearer ${authToken.value}", listOf = "top_rated"
                     )
+                val upcomingMoviesResponse =
+                    movieDetailApi.getPopularMovies(
+                        page = 1,
+                        authHeader = "Bearer ${authToken.value}", listOf = "upcoming"
+                    )
                 if (topRatedrMoviesResponse.isSuccessful && popularMoviesResponse.isSuccessful) {
                     _topRatedMovies.value = topRatedrMoviesResponse.body()
                     _popularMovies.value = popularMoviesResponse.body()
+                    _upcomingMovies.value = upcomingMoviesResponse.body()
                     _isLoading.value = false
                 } else {
                     if (_tries.value <= 1) {

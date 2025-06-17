@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavKey
 import com.zavedahmad.cineDrift.Screen
+import com.zavedahmad.cineDrift.popularMoviesModel.MoviesResponse
 import com.zavedahmad.cineDrift.ui.components.MovieCarousel
 import com.zavedahmad.cineDrift.ui.components.MyBottomBar
 import com.zavedahmad.cineDrift.ui.components.MyTopABCommon
@@ -53,6 +54,7 @@ fun MainPage(backStack: SnapshotStateList<NavKey>, viewModel: MainPageViewModel)
     val error by viewModel.error.collectAsStateWithLifecycle()
     val popularMovies = viewModel.popularMovies.collectAsStateWithLifecycle().value
     val topRatedMovies = viewModel.topRatedMovies.collectAsStateWithLifecycle().value
+    val upcomingMovies = viewModel.upcomingMovies.collectAsStateWithLifecycle().value
     val pagerState = rememberPagerState(pageCount = {
         1
     })
@@ -122,12 +124,12 @@ fun MainPage(backStack: SnapshotStateList<NavKey>, viewModel: MainPageViewModel)
                         HorizontalDivider()
                         Spacer(modifier = Modifier.height(20.dp))
                     }
-                        if (isLoading) ShimmerBlocksMain()
-                        else if (popularMovies == null) Box(
-                            Modifier.fillMaxSize(),
-                            Alignment.Center
-                        ) { Text("Empty") }
-                        else MovieCarousel(backStack, popularMovies)
+                    if (isLoading) ShimmerBlocksMain()
+                    else if (popularMovies == null) Box(
+                        Modifier.fillMaxSize(),
+                        Alignment.Center
+                    ) { Text("Empty") }
+                    else MovieCarousel(backStack, popularMovies)
 
                     Spacer(Modifier.height(20.dp))
                     Column(Modifier.padding(horizontal = 20.dp)) {
@@ -144,9 +146,30 @@ fun MainPage(backStack: SnapshotStateList<NavKey>, viewModel: MainPageViewModel)
                             Alignment.Center
                         ) { Text("Empty") }
                         else MovieCarousel(backStack, topRatedMovies)
+                    CategoryBlock(isLoading, upcomingMovies, backStack,"Upcoming Movies")
 
                 }
             }
         }
     }
+}
+
+@Composable
+fun CategoryBlock(isLoading :Boolean, moviesList : MoviesResponse? , backStack : SnapshotStateList<NavKey>,title : String){
+
+    Spacer(Modifier.height(20.dp))
+    Column(Modifier.padding(horizontal = 20.dp)) {
+        Text(
+            title,
+            style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 40.sp)
+        )
+        HorizontalDivider()
+        Spacer(modifier = Modifier.height(20.dp))
+    }
+    if (isLoading) ShimmerBlocksMain()
+    else if (moviesList== null) Box(
+        Modifier.fillMaxSize(),
+        Alignment.Center
+    ) { Text("Empty") }
+    else MovieCarousel(backStack, moviesList)
 }
