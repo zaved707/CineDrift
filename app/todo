@@ -1,6 +1,8 @@
 todo implement dark Light theme in Settings
 todo add more items to home screen
+todo on click of search icon in search screen to lead to search field and open keyboard
 todo check api key validity
+todo make bottom bar icons similar
 todo add a placeholder for when user has no API
 todo// ComPLETED add a better empty placeHolder for Search Screen
 todo://COMPLETED make favouritesButton in Details page responsive to if the user has added the movie to favourite

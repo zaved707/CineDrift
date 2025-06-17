@@ -4,6 +4,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -32,7 +33,7 @@ val BottomBarItems = listOf<Screen>(
 
 )
 val icons = listOf<ImageVector>(
-    Icons.Default.Home,
+    Icons.Outlined.Home,
     Icons.Default.Search,
     Icons.Default.FavoriteBorder,
 

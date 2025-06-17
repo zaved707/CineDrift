@@ -21,6 +21,7 @@ import com.valentinilk.shimmer.shimmer
 fun ShimmerBlocksMain(){
     LazyRow(modifier = Modifier.shimmer()) {
         items(5){index->
+            Spacer(modifier = Modifier.width(20.dp))
             Card(modifier = Modifier.width(200.dp).height(360.dp)) {
                 Column (modifier = Modifier.padding(20.dp)){
                     Box(Modifier.width(160.dp).height(240.dp).background(MaterialTheme.colorScheme.inversePrimary)){}
@@ -30,7 +31,7 @@ fun ShimmerBlocksMain(){
                 Spacer(modifier = Modifier.height(20.dp))
             }
 
-            Spacer(modifier = Modifier.width(20.dp))
+
         }
     }
     Spacer(modifier = Modifier.height(50.dp))

@@ -1,17 +1,25 @@
 package com.zavedahmad.cineDrift.ui.mainPage
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.pager.VerticalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -44,47 +52,83 @@ fun MainPage(backStack: SnapshotStateList<NavKey>, viewModel: MainPageViewModel)
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val error by viewModel.error.collectAsStateWithLifecycle()
     val popularMovies = viewModel.popularMovies.collectAsStateWithLifecycle().value
-    val topRatedMovies = viewModel.topRatedMoviess.collectAsStateWithLifecycle().value
-
+    val topRatedMovies = viewModel.topRatedMovies.collectAsStateWithLifecycle().value
+    val pagerState = rememberPagerState(pageCount = {
+        1
+    })
 
     Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        modifier = Modifier
+            .nestedScroll(scrollBehavior.nestedScrollConnection)
+            .fillMaxSize(),
         bottomBar = { MyBottomBar(backStack) },
         topBar = { MyTopABCommon(backStack, scrollBehavior, "CineDrift") }
     ) { innerPadding ->
         PullToRefreshBox(
-            modifier = Modifier.padding(innerPadding),
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize(),
             isRefreshing = isLoading,
             onRefresh = { viewModel.setApiKeyAndFetchData() }
         ) {
-            Column(
-                modifier = Modifier
-                    .verticalScroll(scrollState)
-                    .fillMaxSize()
-            ) {
 
 
-                if (error == "NoApi") {
-                    Box(Modifier.fillMaxSize(), Alignment.Center) {
+            if (error == "NoApi") {
+                VerticalPager(state = pagerState) {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Icon(
+                            Icons.Default.KeyOff,
+                            modifier = Modifier.size(200.dp),
+                            contentDescription = "placeholderr",
+                            tint = MaterialTheme.colorScheme.onSecondaryContainer
+                        )
+                        Text("Either you Api is Not set Or is Invalid")
                         Button(onClick = { backStack.add(Screen.SettingsPageRoute) }) {
-                            Text("go to settings to change it")
+                            Text("Go to settings to change it")
                         }
                     }
-                } else if (error != null) {
-                    Box(Modifier.fillMaxSize(), Alignment.Center) {
+                }
+            } else if (error != null) {
+                VerticalPager(state = pagerState) {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+
                         Text(error.toString())
+
                     }
-                } else {
+                }
+
+
+            } else {
+                Column(
+                    modifier = Modifier
+                        .verticalScroll(scrollState)
+                        .fillMaxSize()
+                ) {
+
                     Column(Modifier.padding(horizontal = 20.dp)) {
                         Text(
                             "Popular Movies",
                             style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 40.sp)
                         )
+
                         HorizontalDivider()
-                        if (isLoading) ShimmerBlocksMain()
-                        else if (popularMovies == null) Box(Modifier.fillMaxSize(), Alignment.Center) { Text("Empty") }
-                        else MovieCarousel(backStack, popularMovies)
+                        Spacer(modifier = Modifier.height(20.dp))
                     }
+                        if (isLoading) ShimmerBlocksMain()
+                        else if (popularMovies == null) Box(
+                            Modifier.fillMaxSize(),
+                            Alignment.Center
+                        ) { Text("Empty") }
+                        else MovieCarousel(backStack, popularMovies)
+
                     Spacer(Modifier.height(20.dp))
                     Column(Modifier.padding(horizontal = 20.dp)) {
                         Text(
@@ -92,10 +136,15 @@ fun MainPage(backStack: SnapshotStateList<NavKey>, viewModel: MainPageViewModel)
                             style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 40.sp)
                         )
                         HorizontalDivider()
-                        if (isLoading) ShimmerBlocksMain()
-                        else if (topRatedMovies == null) Box(Modifier.fillMaxSize(), Alignment.Center) { Text("Empty") }
-                        else MovieCarousel(backStack, topRatedMovies)
+                        Spacer(modifier = Modifier.height(20.dp))
                     }
+                        if (isLoading) ShimmerBlocksMain()
+                        else if (topRatedMovies == null) Box(
+                            Modifier.fillMaxSize(),
+                            Alignment.Center
+                        ) { Text("Empty") }
+                        else MovieCarousel(backStack, topRatedMovies)
+
                 }
             }
         }

@@ -142,11 +142,11 @@ fun MovieDetailsPage(viewModel: MovieDetailsPageViewModel, backStack: SnapshotSt
             val scrollState = rememberScrollState()
 
 
-                Column(
-                    modifier = Modifier
-                        .verticalScroll(scrollState)
-                        .padding(innerPadding)
-                ) {
+            Column(
+                modifier = Modifier
+                    .verticalScroll(scrollState)
+                    .padding(innerPadding)
+            ) {
 
                     Box(
                         Modifier
@@ -161,7 +161,10 @@ fun MovieDetailsPage(viewModel: MovieDetailsPageViewModel, backStack: SnapshotSt
 
                             is AsyncImagePainter.State.Loading -> {
                                 Box(
-                                    modifier = Modifier.fillMaxSize().shimmer().background(MaterialTheme.colorScheme.tertiary),
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .shimmer()
+                                        .background(MaterialTheme.colorScheme.tertiary),
                                     contentAlignment = Alignment.Center
                                 ) {
 

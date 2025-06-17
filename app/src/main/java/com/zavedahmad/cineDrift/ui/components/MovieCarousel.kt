@@ -37,12 +37,14 @@ fun MovieCarousel(backStack:  SnapshotStateList<NavKey>,movies: MoviesResponse){
             val painter =
                 rememberAsyncImagePainter(imageLink)
             val state = painter.state.collectAsStateWithLifecycle()
+            Spacer(modifier = Modifier.width(20.dp))
             Column {
                 Card(modifier = Modifier.width(200.dp), onClick = {backStack.add((MovieDetailPageRoute(item.id.toString())))}) {
                     Box(
                         modifier = Modifier.size(width = 200.dp, height = 280.dp)
                             .padding(20.dp), contentAlignment = Alignment.Center
                     ) {
+
                         when (state.value) {
                             is AsyncImagePainter.State.Empty -> {
                                 Text("Empty")
@@ -77,7 +79,7 @@ fun MovieCarousel(backStack:  SnapshotStateList<NavKey>,movies: MoviesResponse){
                 }
                 Spacer(modifier = Modifier.height(50.dp))
             }
-            Spacer(modifier = Modifier.width(20.dp))
+
         }
     }
 }
