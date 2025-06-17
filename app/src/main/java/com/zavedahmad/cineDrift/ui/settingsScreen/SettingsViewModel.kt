@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.zavedahmad.cineDrift.roomDatabase.PreferenceEntity
 import com.zavedahmad.cineDrift.roomDatabase.PreferencesDao
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -15,14 +16,26 @@ class SettingsViewModel @Inject constructor(val preferencesDao: PreferencesDao) 
     private val _userInput = MutableStateFlow("")
     val userInput = _userInput.asStateFlow()
     private var api = MutableStateFlow<PreferenceEntity?>(null)
+
     val apiKeyInDB = api.asStateFlow()
-    init {
+
+    private val _themeMode = MutableStateFlow<PreferenceEntity?>(null)
+    val themeMode= _themeMode.asStateFlow()
+        init {
+        getApiFromDB()
+        collectThemeMode()
+    }
+    fun setTheme(value: String){
         viewModelScope.launch {
-            preferencesDao.getPreferenceFlow("ApiKey").collect { preference-> api.value = preference }
+            preferencesDao.updatePreference(PreferenceEntity("ThemeMode", value))
+        }
+
+    }
+    fun collectThemeMode(){
+        viewModelScope.launch (Dispatchers.IO){
+            preferencesDao.getPreferenceFlow("ThemeMode").collect { preference-> _themeMode.value = preference }
         }
     }
-
-
     fun setUserInput(newInput: String) {
         _userInput.value = newInput
     }
@@ -34,8 +47,8 @@ class SettingsViewModel @Inject constructor(val preferencesDao: PreferencesDao) 
     }
 
     fun getApiFromDB() {
-        viewModelScope.launch {
-            _userInput.value= preferencesDao.getPreference("ApiKey")?.value?: "empty"
+        viewModelScope.launch(Dispatchers.IO) {
+            preferencesDao.getPreferenceFlow("ApiKey").collect { preference-> api.value = preference }
         }
     }
 }

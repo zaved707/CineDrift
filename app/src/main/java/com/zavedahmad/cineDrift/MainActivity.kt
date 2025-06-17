@@ -3,17 +3,20 @@ package com.zavedahmad.cineDrift
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
@@ -22,7 +25,6 @@ import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import androidx.navigation3.ui.rememberSceneSetupNavEntryDecorator
 import com.zavedahmad.cineDrift.ui.favouritesScreen.FaScViewModel
-
 import com.zavedahmad.cineDrift.ui.favouritesScreen.FavouritesScreen
 import com.zavedahmad.cineDrift.ui.mainPage.MainPage
 import com.zavedahmad.cineDrift.ui.mainPage.MainPageViewModel
@@ -40,25 +42,24 @@ import kotlinx.serialization.Serializable
 
 sealed class Screen : NavKey {
     @Serializable
-    data object NoApiPageRoute: Screen()
+    data object NoApiPageRoute : Screen()
 
     @Serializable
-    data object MainPageRoute :Screen()
+    data object MainPageRoute : Screen()
 
     @Serializable
-    data object SearchPageRoute  : Screen()
+    data object SearchPageRoute : Screen()
 
     @Serializable
     data object FavouritePageRoute : Screen()
 
     @Serializable
-    data object SettingsPageRoute: Screen()
+    data object SettingsPageRoute : Screen()
 
 
     @Serializable
-    data class MovieDetailPageRoute(val id: String): Screen()
+    data class MovieDetailPageRoute(val id: String) : Screen()
 }
-
 
 
 @AndroidEntryPoint
@@ -72,94 +73,119 @@ class RecipePickerActivity : ComponentActivity() {
             val viewModelFavouritesPage = hiltViewModel<FaScViewModel>()
             val viewModelMainPage = hiltViewModel<MainPageViewModel>()
             val viewModelSearchScreen = hiltViewModel<SSViewModel>()
-            val isTopMainPageRoute =if( backStack.lastOrNull() is Screen.MainPageRoute || backStack.lastOrNull() is Screen.SearchPageRoute || backStack.lastOrNull() is Screen.FavouritePageRoute  ){true}else{
-                false
-            }
-            Nav3RecipesTheme {
-                Scaffold(
-                    modifier = Modifier.fillMaxSize(),
+            val isTopMainPageRoute =
+                if (backStack.lastOrNull() is Screen.MainPageRoute || backStack.lastOrNull() is Screen.SearchPageRoute || backStack.lastOrNull() is Screen.FavouritePageRoute) {
+                    true
+                } else {
+                    false
+                }
+            val settingsViewModel = hiltViewModel<SettingsViewModel>()
+            val theme by settingsViewModel.themeMode.collectAsStateWithLifecycle()
+            val themeReal = theme
+            if (themeReal == null) {
+                Nav3RecipesTheme("system") {
+                    Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surface))
+                }
+            } else {
 
-                    ) { innerPadding ->
-                    var absolutePadding = PaddingValues()
-                    if (isTopMainPageRoute) {
-                        absolutePadding = PaddingValues(bottom = innerPadding.calculateBottomPadding())
-                    }
+                Nav3RecipesTheme(themeReal.value) {
+                    Scaffold(
+                        modifier = Modifier.fillMaxSize(),
 
-                    Box(modifier = Modifier.padding()) {
+                        ) { innerPadding ->
+                        var absolutePadding = PaddingValues()
+                        if (isTopMainPageRoute) {
+                            absolutePadding =
+                                PaddingValues(bottom = innerPadding.calculateBottomPadding())
+                        }
+
+                        Box(modifier = Modifier.padding()) {
 
 
-                        NavDisplay(
-                            backStack = backStack,
-                            onBack = { backStack.removeLastOrNull() },
-                            entryDecorators = listOf(
-                                rememberSceneSetupNavEntryDecorator(),
-                                rememberSavedStateNavEntryDecorator(),
-                                rememberViewModelStoreNavEntryDecorator()
-                            ),
-                            entryProvider = { key ->
-                                when (key) {
-                                    is Screen.SearchPageRoute -> NavEntry(key = key) {
-                                            SearchScreen(backStack,  viewModelSearchScreen)
+                            NavDisplay(
+                                backStack = backStack,
+                                onBack = { backStack.removeLastOrNull() },
+                                entryDecorators = listOf(
+                                    rememberSceneSetupNavEntryDecorator(),
+                                    rememberSavedStateNavEntryDecorator(),
+                                    rememberViewModelStoreNavEntryDecorator()
+                                ),
+                                entryProvider = { key ->
+                                    when (key) {
+                                        is Screen.SearchPageRoute -> NavEntry(key = key) {
+                                            SearchScreen(backStack, viewModelSearchScreen)
 
-                                    }
+                                        }
 
-                                    is Screen.MainPageRoute -> {
-                                        NavEntry(key = key) {
+                                        is Screen.MainPageRoute -> {
+                                            NavEntry(key = key) {
 
-                                            Column {
+                                                Column {
 
-                                                MainPage(backStack, viewModelMainPage)
+                                                    MainPage(backStack, viewModelMainPage)
+                                                }
                                             }
                                         }
-                                    }
-                                    is Screen.SettingsPageRoute->{
-                                        NavEntry(key= key){
-                                            val viewModel = hiltViewModel<SettingsViewModel>()
-                                            Box(
-                                            modifier = Modifier.fillMaxSize(),
-                                            contentAlignment = Alignment.Center
-                                        ) {
 
-                                            SettingsScreen(backStack,viewModel)
-                                        }}
-                                    }
-                                    is Screen.FavouritePageRoute->{
-                                        NavEntry(key= key){ Box(
-                                            modifier = Modifier.fillMaxSize(),
-                                            contentAlignment = Alignment.Center
-                                        ) {
-                                            FavouritesScreen(backStack,viewModelFavouritesPage)
-                                        }}
-                                    }
-                                    is Screen.NoApiPageRoute->{
-                                        NavEntry(key=key){
-                                            NoApiPage(backStack)
+                                        is Screen.SettingsPageRoute -> {
+                                            NavEntry(key = key) {
+
+
+                                                Box(
+                                                    modifier = Modifier.fillMaxSize(),
+                                                    contentAlignment = Alignment.Center
+                                                ) {
+
+                                                    SettingsScreen(backStack, settingsViewModel)
+                                                }
+                                            }
                                         }
-                                    }
-                                    is Screen.MovieDetailPageRoute -> {
-                                        NavEntry(key = key) {
-                                            val viewModel =
-                                                hiltViewModel<MovieDetailsPageViewModel, MovieDetailsPageViewModel.Factory>(
-                                                    creationCallback = { factory ->
-                                                        factory.create(key)
-                                                    }
-                                                )
-                                            MovieDetailsPage(viewModel,backStack)
+
+                                        is Screen.FavouritePageRoute -> {
+                                            NavEntry(key = key) {
+                                                Box(
+                                                    modifier = Modifier.fillMaxSize(),
+                                                    contentAlignment = Alignment.Center
+                                                ) {
+                                                    FavouritesScreen(
+                                                        backStack,
+                                                        viewModelFavouritesPage
+                                                    )
+                                                }
+                                            }
                                         }
+
+                                        is Screen.NoApiPageRoute -> {
+                                            NavEntry(key = key) {
+                                                NoApiPage(backStack)
+                                            }
+                                        }
+
+                                        is Screen.MovieDetailPageRoute -> {
+                                            NavEntry(key = key) {
+                                                val viewModel =
+                                                    hiltViewModel<MovieDetailsPageViewModel, MovieDetailsPageViewModel.Factory>(
+                                                        creationCallback = { factory ->
+                                                            factory.create(key)
+                                                        }
+                                                    )
+                                                MovieDetailsPage(viewModel, backStack)
+                                            }
+                                        }
+
+                                        else -> throw RuntimeException("Invalid NavKey.")
                                     }
 
-                                    else -> throw RuntimeException("Invalid NavKey.")
+
                                 }
+                            )
 
-
-                            }
-                        )
-
+                        }
                     }
                 }
             }
         }
     }
+
+
 }
-
-
