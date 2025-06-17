@@ -85,7 +85,7 @@ class RecipePickerActivity : ComponentActivity() {
                         absolutePadding = PaddingValues(bottom = innerPadding.calculateBottomPadding())
                     }
 
-                    Box(modifier = Modifier.padding(absolutePadding)) {
+                    Box(modifier = Modifier.padding()) {
 
 
                         NavDisplay(
