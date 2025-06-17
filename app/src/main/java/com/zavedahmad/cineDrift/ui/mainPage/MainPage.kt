@@ -43,6 +43,7 @@ import com.zavedahmad.cineDrift.ui.components.MovieCarousel
 import com.zavedahmad.cineDrift.ui.components.MyBottomBar
 import com.zavedahmad.cineDrift.ui.components.MyTopABCommon
 import com.zavedahmad.cineDrift.ui.components.ShimmerBlocksMain
+import com.zavedahmad.cineDrift.ui.errorPages.ErrorPage
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -66,49 +67,20 @@ fun MainPage(backStack: SnapshotStateList<NavKey>, viewModel: MainPageViewModel)
         bottomBar = { MyBottomBar(backStack) },
         topBar = { MyTopABCommon(backStack, scrollBehavior, "CineDrift") }
     ) { innerPadding ->
-        PullToRefreshBox(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize(),
-            isRefreshing = isLoading,
-            onRefresh = { viewModel.reloadFromScreen() }
-        ) {
 
 
-            if (error == "NoApi") {
-                VerticalPager(state = pagerState) {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Icon(
-                            Icons.Default.KeyOff,
-                            modifier = Modifier.size(200.dp),
-                            contentDescription = "placeholderr",
-                            tint = MaterialTheme.colorScheme.onSecondaryContainer
-                        )
-                        Text("Either you Api is Not set Or is Invalid")
-                        Button(onClick = { backStack.add(Screen.SettingsPageRoute) }) {
-                            Text("Go to settings to change it")
-                        }
-                    }
-                }
-            } else if (error != null) {
-                VerticalPager(state = pagerState) {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
 
-                        Text(error.toString())
-
-                    }
-                }
-
+           if (error != null) {
+               ErrorPage(innerPadding, isLoading = isLoading, backStack = backStack, onReload = {viewModel.reloadFromScreen()}, error = error?: "")
 
             } else {
+               PullToRefreshBox(
+                   modifier = Modifier
+                       .padding(innerPadding)
+                       .fillMaxSize(),
+                   isRefreshing = isLoading,
+                   onRefresh = { viewModel.reloadFromScreen() }
+               ) {
                 Column(
                     modifier = Modifier
                         .verticalScroll(scrollState)

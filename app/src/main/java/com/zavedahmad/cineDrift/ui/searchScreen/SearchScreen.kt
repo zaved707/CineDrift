@@ -3,6 +3,7 @@ package com.zavedahmad.cineDrift.ui.searchScreen
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -54,6 +55,7 @@ import com.zavedahmad.cineDrift.Screen
 import com.zavedahmad.cineDrift.ui.components.MyBottomBar
 import com.zavedahmad.cineDrift.ui.components.MyTopABCommon
 import com.zavedahmad.cineDrift.ui.components.SmallMovieCard
+import com.zavedahmad.cineDrift.ui.errorPages.ErrorPage
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -125,56 +127,15 @@ fun SearchScreen(backStack: SnapshotStateList<NavKey>, viewModel: SSViewModel) {
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            if (error == "NoApi") {
-                PullToRefreshBox(
-                    modifier = Modifier
-                        .padding()
-                        .fillMaxSize(),
-                    isRefreshing = isLoading,
-                    onRefresh = { viewModel.reloadFromScreen() }
-                ) {
-                    VerticalPager(state = pagerState) {
-                        Column(
-                            modifier = Modifier.fillMaxSize(),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Icon(
-                                Icons.Default.KeyOff,
-                                modifier = Modifier.size(200.dp),
-                                contentDescription = "placeholderr",
-                                tint = MaterialTheme.colorScheme.onSecondaryContainer
-                            )
-                            Text("Either you Api is Not set Or is Invalid")
-                            Button(onClick = { backStack.add(Screen.SettingsPageRoute) }) {
-                                Text("Go to settings to change it")
-                            }
-                        }
-                    }
-                }
-            } else if (error != null) {
-                PullToRefreshBox(
-                    modifier = Modifier
-                        .padding()
-                        .fillMaxSize(),
-                    isRefreshing = isLoading,
-                    onRefresh = { viewModel.reloadFromScreen() }
-                ) {
-                    VerticalPager(state = pagerState) {
-                        Column(
+           if (error != null) {
 
-
-                            modifier = Modifier.fillMaxSize(),
-
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-
-                            Text(error.toString())
-
-                        }
-                    }
-                }
+               ErrorPage(
+                   PaddingValues(),
+                   error ?: "",
+                   isLoading,
+                   onReload = { viewModel.reloadFromScreen() },
+                   backStack
+               )
 
 
             } else {

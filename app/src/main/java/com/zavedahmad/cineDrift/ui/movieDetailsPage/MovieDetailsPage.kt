@@ -55,6 +55,8 @@ import coil3.compose.AsyncImagePainter
 import coil3.compose.rememberAsyncImagePainter
 import com.valentinilk.shimmer.shimmer
 import com.zavedahmad.cineDrift.Screen
+import com.zavedahmad.cineDrift.ui.errorPages.ErrorPage
+import java.nio.file.WatchEvent
 
 //import com.zavedahmad.cineDrift.roomDatabase.FavouritesDao
 
@@ -128,56 +130,17 @@ fun MovieDetailsPage(viewModel: MovieDetailsPageViewModel, backStack: SnapshotSt
             ), scrollBehavior = scrollBehavior
         )
     }) { innerPadding ->
-        if (error == "NoApi") {
-            PullToRefreshBox(
-                modifier = Modifier
-                    .padding()
-                    .fillMaxSize(),
-                isRefreshing = isLoading,
-                onRefresh = { viewModel.reloadFromScreen() }
-            ) {
-                VerticalPager(state = pagerState) {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Icon(
-                            Icons.Default.KeyOff,
-                            modifier = Modifier.size(200.dp),
-                            contentDescription = "placeholderr",
-                            tint = MaterialTheme.colorScheme.onSecondaryContainer
-                        )
-                        Text("Either you Api is Not set Or is Invalid")
-                        Button(onClick = { backStack.add(Screen.SettingsPageRoute) }) {
-                            Text("Go to settings to change it")
-                        }
-                    }
-                }
-            }
-        } else if (error != null) {
-            PullToRefreshBox(
-                modifier = Modifier
-                    .padding()
-                    .fillMaxSize(),
-                isRefreshing = isLoading,
-                onRefresh = { viewModel.reloadFromScreen() }
-            ) {
-                VerticalPager(state = pagerState) {
-                    Column(
 
+        if (error != null) {
 
-                        modifier = Modifier.fillMaxSize(),
+                ErrorPage(
+                    innerPadding,
+                    error ?: "",
+                    isLoading,
+                    onReload = { viewModel.reloadFromScreen() },
+                    backStack
+                )
 
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-
-                        Text(error.toString())
-
-                    }
-                }
-            }
 
 
         } else {
