@@ -33,7 +33,7 @@ class SettingsViewModel @Inject constructor(val preferencesDao: PreferencesDao) 
     }
     fun collectThemeMode(){
         viewModelScope.launch (Dispatchers.IO){
-            preferencesDao.getPreferenceFlow("ThemeMode").collect { preference-> _themeMode.value = preference }
+            preferencesDao.getPreferenceFlow("ThemeMode").collect { preference-> _themeMode.value = preference?: PreferenceEntity("ThemeMode", "system") }
         }
     }
     fun setUserInput(newInput: String) {

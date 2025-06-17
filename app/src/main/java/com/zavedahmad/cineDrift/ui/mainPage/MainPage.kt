@@ -86,38 +86,8 @@ fun MainPage(backStack: SnapshotStateList<NavKey>, viewModel: MainPageViewModel)
                         .verticalScroll(scrollState)
                         .fillMaxSize()
                 ) {
-
-                    Column(Modifier.padding(horizontal = 20.dp)) {
-                        Text(
-                            "Popular Movies",
-                            style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 40.sp)
-                        )
-
-                        HorizontalDivider()
-                        Spacer(modifier = Modifier.height(20.dp))
-                    }
-                    if (isLoading) ShimmerBlocksMain()
-                    else if (popularMovies == null) Box(
-                        Modifier.fillMaxSize(),
-                        Alignment.Center
-                    ) { Text("Empty") }
-                    else MovieCarousel(backStack, popularMovies)
-
-                    Spacer(Modifier.height(20.dp))
-                    Column(Modifier.padding(horizontal = 20.dp)) {
-                        Text(
-                            "Top-Rated Movies",
-                            style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 40.sp)
-                        )
-                        HorizontalDivider()
-                        Spacer(modifier = Modifier.height(20.dp))
-                    }
-                        if (isLoading) ShimmerBlocksMain()
-                        else if (topRatedMovies == null) Box(
-                            Modifier.fillMaxSize(),
-                            Alignment.Center
-                        ) { Text("Empty") }
-                        else MovieCarousel(backStack, topRatedMovies)
+                    CategoryBlock(isLoading, popularMovies, backStack,"Popular Movies")
+                    CategoryBlock(isLoading, topRatedMovies, backStack,"Top Rated Movies")
                     CategoryBlock(isLoading, upcomingMovies, backStack,"Upcoming Movies")
 
                 }
